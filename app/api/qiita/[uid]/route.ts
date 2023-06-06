@@ -11,7 +11,7 @@ export async function GET(
 	const uid = params.uid;
 	const BASE_URL = `https://qiita.com/api/v2`;
 	const ENDPOINT = `${BASE_URL}/users/${uid}/items?page=1&per_page=3`;
-	console.log(process.env.QIITA_TOKEN);
+
 	try {
 		const token = process.env.QIITA_TOKEN;
 		if (typeof token === 'undefined') throw Error('Access Token is undefined.');
