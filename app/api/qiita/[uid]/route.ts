@@ -10,7 +10,7 @@ export async function GET(
 ) {
 	const uid = params.uid;
 	const BASE_URL = `https://qiita.com/api/v2`;
-	const ENDPOINT = `${BASE_URL}/users/${uid}/items?page=1&per_page=3`;
+	const ENDPOINT = `${BASE_URL}/users/${uid}/items?page=1&per_page=100`;
 
 	try {
 		const token = process.env.QIITA_TOKEN;
@@ -27,11 +27,13 @@ export async function GET(
 			return NextResponse.json({ ok: false }, { status: 404 });
 		}
 
-		const json = (await res.json()) as { title: string; url: string }[];
+		const json = (await res.json()) as { title: string; url: string; likes_count: number }[];
 		const posts = json.map((post) => {
+			const { title, url, likes_count } = post;
 			return {
-				title: post.title,
-				url: post.url,
+				title,
+				url,
+				likes_count,
 			};
 		});
 		return NextResponse.json(posts, { status: 200 });

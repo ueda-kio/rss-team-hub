@@ -18,7 +18,7 @@ export default function Form() {
 
 	const handleSubmitQiita = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		if (qiita === qiitaValue) return;
+		// if (qiita === qiitaValue) return;
 
 		const res = await fetch(`/api/qiita/${qiitaValue}`);
 		const json = await res.json();
@@ -40,11 +40,19 @@ export default function Form() {
 		} else {
 			console.error('error');
 		}
+
+		const item = await fetch(`/api/item/`, {
+			method: 'POST',
+			body: JSON.stringify({
+				item: json,
+				uid: session?.user.id,
+			}),
+		});
 	};
 
 	const handleSubmitZenn = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		if (zenn === zennValue) return;
+		// if (zenn === zennValue) return;
 
 		const res = await fetch(`/api/zenn/${zennValue}`);
 		const json = await res.json();
@@ -75,6 +83,12 @@ export default function Form() {
 		setZennValue(() => e.target.value);
 	};
 
+	const onClick = async () => {
+		const item = await fetch(`/api/item/`);
+		const j = await item.json();
+		console.log(j);
+	};
+
 	return (
 		<>
 			<form onSubmit={handleSubmitQiita}>
@@ -92,6 +106,9 @@ export default function Form() {
 					<button>登録</button>
 				</p>
 			</form>
+			<button type="button" onClick={onClick}>
+				button
+			</button>
 		</>
 	);
 }
