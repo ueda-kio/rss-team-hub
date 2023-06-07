@@ -3,7 +3,7 @@ import { connectToDB } from '@/utils/database';
 import { NextRequest, NextResponse } from 'next/server';
 import { notFound } from 'next/navigation';
 
-export async function PUT(
+export async function PATCH(
 	req: NextRequest,
 	{
 		params,

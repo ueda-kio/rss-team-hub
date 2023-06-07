@@ -22,6 +22,11 @@ export async function GET(
 				'Content-Type': 'application/json',
 			},
 		});
+
+		if (res.status === 404) {
+			return NextResponse.json({ ok: false }, { status: 404 });
+		}
+
 		const json = (await res.json()) as { title: string; url: string }[];
 		const posts = json.map((post) => {
 			return {
@@ -29,8 +34,9 @@ export async function GET(
 				url: post.url,
 			};
 		});
-		return NextResponse.json(posts);
+		return NextResponse.json(posts, { status: 200 });
 	} catch (e) {
 		console.error(e);
+		return NextResponse.json({ ok: false }, { status: 500 });
 	}
 }

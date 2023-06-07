@@ -43,8 +43,8 @@ const handler = NextAuth({
 						email: profile.email,
 						username: profile.name?.replace(' ', '').toLowerCase(),
 						image: profile.image,
-						qiita: 'qiita',
-						zenn: 'zenn',
+						qiita: '',
+						zenn: '',
 					});
 				}
 

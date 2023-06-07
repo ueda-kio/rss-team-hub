@@ -9,7 +9,7 @@ export default function SessionTest({ children }: { children: React.ReactNode })
 		return <>loading...</>;
 	}
 
-	console.log('session', session);
+	console.log('session', session?.user);
 
 	if (session) {
 		return (

@@ -10,6 +10,7 @@ export default function Form() {
 	const qiita = session?.user.qiita ?? '';
 	const zenn = session?.user.zenn ?? '';
 
+	// TODO: 必要か？sessionの状態監視は誰がしている？
 	useEffect(() => {
 		setQiitaValue(() => qiita);
 		setZennValue(() => zenn);
@@ -17,12 +18,14 @@ export default function Form() {
 
 	const handleSubmitQiita = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		if (qiita === qiitaValue) return;
+
 		const res = await fetch(`/api/qiita/${qiitaValue}`);
 		const json = await res.json();
 		console.log(json);
 
 		const result = await fetch(`/api/user/${session?.user.id}`, {
-			method: 'PUT',
+			method: 'PATCH',
 			body: JSON.stringify({
 				qiita: qiitaValue,
 			}),
@@ -30,6 +33,10 @@ export default function Form() {
 
 		if (result.ok) {
 			console.log('qiita value is update');
+			// TODO: ダサすぎ問題
+			if (session && session.user) {
+				session.user.qiita = qiitaValue;
+			}
 		} else {
 			console.error('error');
 		}
@@ -37,12 +44,14 @@ export default function Form() {
 
 	const handleSubmitZenn = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		if (zenn === zennValue) return;
+
 		const res = await fetch(`/api/zenn/${zennValue}`);
 		const json = await res.json();
 		console.log(json);
 
 		const result = await fetch(`/api/user/${session?.user.id}`, {
-			method: 'PUT',
+			method: 'PATCH',
 			body: JSON.stringify({
 				zenn: zennValue,
 			}),
@@ -50,6 +59,9 @@ export default function Form() {
 
 		if (result.ok) {
 			console.log('zenn value is update');
+			if (session && session.user) {
+				session.user.zenn = zennValue;
+			}
 		} else {
 			console.error('error');
 		}
