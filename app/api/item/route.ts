@@ -3,19 +3,6 @@ import Item from '@/models/item';
 import { connectToDatabase } from '@/utils/mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(
-	req: NextRequest,
-	{
-		params,
-	}: {
-		params: { uid?: string; objectId?: string };
-	}
-) {
-	const { db } = await connectToDatabase();
-	const data = await db.collection('users').find().toArray();
-	return NextResponse.json({ ok: true, data }, { status: 200 });
-}
-
 export async function POST(req: NextRequest) {
 	const { items, uid, site } = (await req.json()) as {
 		items: Data[];

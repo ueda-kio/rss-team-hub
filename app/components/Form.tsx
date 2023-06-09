@@ -6,16 +6,15 @@ import React, { useEffect, useState } from 'react';
 
 export default function Form() {
 	const { data: session } = useSession();
-	const [qiitaValue, setQiitaValue] = useState('');
-	const [zennValue, setZennValue] = useState('');
 	const qiita = session?.user.qiita ?? '';
 	const zenn = session?.user.zenn ?? '';
+	const [qiitaValue, setQiitaValue] = useState('');
+	const [zennValue, setZennValue] = useState('');
 
-	// TODO: 必要か？sessionの状態監視は誰がしている？
 	useEffect(() => {
-		setQiitaValue(() => qiita);
-		setZennValue(() => zenn);
-	}, [session]);
+		setQiitaValue(qiita);
+		setZennValue(zenn);
+	}, [qiita, zenn]);
 
 	const handleSubmitQiita = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -33,7 +32,6 @@ export default function Form() {
 		});
 
 		if (result.ok) {
-			console.log('qiita value is update');
 			// TODO: ダサすぎ問題
 			if (session && session.user) {
 				session.user.qiita = qiitaValue;
@@ -69,7 +67,6 @@ export default function Form() {
 			});
 
 			if (result.ok) {
-				console.log('zenn value is update');
 				if (session && session.user) {
 					session.user.zenn = zennValue;
 				}
@@ -99,7 +96,7 @@ export default function Form() {
 	};
 
 	const onClick = async () => {
-		const item = await fetch(`/api/item/`);
+		const item = await fetch(`/api/item/${session?.user.id}`);
 		const j = await item.json();
 		console.log(j);
 	};

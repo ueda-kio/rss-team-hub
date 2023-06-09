@@ -30,11 +30,11 @@ const UserSchema = new Schema({
 	// TODO
 	qiita: {
 		type: String,
-		default: '',
+		// default: '',
 	},
 	zenn: {
 		type: String,
-		default: '',
+		// default: '',
 	},
 });
 

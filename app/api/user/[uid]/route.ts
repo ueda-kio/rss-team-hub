@@ -1,5 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/utils/mongodb';
+import { ObjectId } from 'mongodb';
+
+export async function GET(
+	req: NextRequest,
+	{
+		params,
+	}: {
+		params: { uid: string };
+	}
+) {
+	try {
+		const { db } = await connectToDatabase();
+		const user = await db.collection('users').findOne({ _id: new ObjectId(params.uid) });
+		return NextResponse.json({ user }, { status: 200 });
+	} catch (e) {}
+}
 
 export async function PATCH(
 	req: NextRequest,
@@ -12,29 +28,15 @@ export async function PATCH(
 	try {
 		// TODO: 型定義
 		const { qiita, zenn } = await req.json();
-		// await connectToDB();
 
-		const { client, db } = await connectToDatabase();
-		// const user = await db.collection('users').findOne({ id: params.uid});
-
-		// const user = await User.findById(params.uid);
-		// if (user === null) {
-		// 	notFound();
-		// }
+		const { db } = await connectToDatabase();
 
 		if (typeof qiita === 'string') {
-			// user;
-			// user.set('qiita', qiita);
-			// await user.save();
-			// await db.collection('users').findOneAndUpdate({ id: params.uid }, { qiita });
-			await db.collection('users').updateOne({ id: params.uid }, { $set: { qiita } });
+			await db.collection('users').updateOne({ _id: new ObjectId(params.uid) }, { $set: { qiita } });
 		} else if (typeof zenn === 'string') {
-			// user.set('zenn', zenn);
-			// await user.save();
-
-			// await db.collection('users').findOneAndUpdate({ id: params.uid }, { zenn });
-			const res = await db.collection('users').updateOne({ id: params.uid }, { $set: { zenn } });
-			console.log(res);
+			const res = await db.collection('users').updateOne({ _id: new ObjectId(params.uid) }, { $set: { zenn } });
+		} else {
+			throw new Error('"site" must be either "qiita" or "zenn"');
 		}
 
 		return NextResponse.json({ ok: 'ok' }, { status: 201 });

@@ -1,9 +1,11 @@
 import User from '@/models/user';
 import { connectToDB } from '@/utils/database';
+import { connectToDatabase } from '@/utils/mongodb';
 import NextAuth, { Session } from 'next-auth';
+import type { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 
-const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
 	providers: [
 		GoogleProvider({
 			clientId: process.env.GOOGLE_ID ?? '',
@@ -16,15 +18,22 @@ const handler = NextAuth({
 			const { email } = session.user;
 			try {
 				if (!email) throw new Error('Email is undefined.');
-				const sessionUser = await User.findOne({ email });
+				// const sessionUser = await User.findOne({ email });
+				// if (!sessionUser) throw new Error('user is not exist.');
+
+				const { db } = await connectToDatabase();
+				const sessionUser = await db.collection('users').findOne({ email });
 				if (!sessionUser) throw new Error('user is not exist.');
+
 				const { _id, qiita, zenn } = sessionUser;
-				session.user.id = _id.toString() ?? '';
+
+				session.user.id = _id.toString();
 				session.user.qiita = qiita;
 				session.user.zenn = zenn;
-				console.log('session-callback', session);
+
 				return session;
-			} catch (error) {
+			} catch (e) {
+				console.error('session error', e);
 				return session;
 			}
 		},
@@ -32,12 +41,29 @@ const handler = NextAuth({
 			try {
 				if (typeof profile === 'undefined') throw new Error('profile is undefined');
 				await connectToDB();
+
+				// const { db } = await connectToDatabase();
+				const { email } = profile;
+				if (typeof email === 'undefined') throw new Error('email is undefined');
+
+				// TODO: mongoDB Clientだとめちゃめちゃ時間かかる
+				// const isExistUser = await db.collection('users').findOne({ email });
+				// if (isExistUser === null) {
+				// 	await db.collection('users').insertOne({
+				// 		email,
+				// 		username: profile.name?.replace(' ', ''),
+				// 		image: profile.picture ?? '',
+				// 		qiita: '',
+				// 		zenn: '',
+				// 	});
+				// }
+
 				const userExists = await User.findOne({ email: profile.email });
 				if (!userExists) {
 					await User.create({
 						email: profile.email,
-						username: profile.name?.replace(' ', '').toLowerCase(),
-						image: profile.image,
+						username: profile.name?.replace(' ', ''),
+						image: profile.picture ?? '',
 						qiita: '',
 						zenn: '',
 					});
@@ -48,7 +74,12 @@ const handler = NextAuth({
 				return false;
 			}
 		},
+		// async jwt({ token, user, account, profile }) {
+		// 	return token;
+		// },
 	},
-});
+};
 
+const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
+export default NextAuth(authOptions);
