@@ -16,16 +16,13 @@ const handler = NextAuth({
 			const { email } = session.user;
 			try {
 				if (!email) throw new Error('Email is undefined.');
-
 				const sessionUser = await User.findOne({ email });
 				if (!sessionUser) throw new Error('user is not exist.');
-
 				const { _id, qiita, zenn } = sessionUser;
-
 				session.user.id = _id.toString() ?? '';
 				session.user.qiita = qiita;
 				session.user.zenn = zenn;
-
+				console.log('session-callback', session);
 				return session;
 			} catch (error) {
 				return session;
@@ -34,10 +31,8 @@ const handler = NextAuth({
 		async signIn({ account, profile, user, credentials }) {
 			try {
 				if (typeof profile === 'undefined') throw new Error('profile is undefined');
-
 				await connectToDB();
 				const userExists = await User.findOne({ email: profile.email });
-				console.log('userExists', userExists);
 				if (!userExists) {
 					await User.create({
 						email: profile.email,
@@ -47,10 +42,9 @@ const handler = NextAuth({
 						zenn: '',
 					});
 				}
-
 				return true;
 			} catch (error) {
-				console.log('Error checking if user exists: ', error);
+				console.error('Error checking if user exists: ', error);
 				return false;
 			}
 		},

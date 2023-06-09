@@ -1,5 +1,6 @@
 'use client';
 
+import { Article, Data } from '@/@types/qiita';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 
@@ -21,8 +22,8 @@ export default function Form() {
 		// if (qiita === qiitaValue) return;
 
 		const res = await fetch(`/api/qiita/${qiitaValue}`);
-		const json = await res.json();
-		console.log(json);
+		const items = (await res.json()) as Data[];
+		console.log(items);
 
 		const result = await fetch(`/api/user/${session?.user.id}`, {
 			method: 'PATCH',
@@ -44,8 +45,9 @@ export default function Form() {
 		const item = await fetch(`/api/item/`, {
 			method: 'POST',
 			body: JSON.stringify({
-				item: json,
-				uid: session?.user.id,
+				items,
+				uid: session?.user.id ?? '',
+				site: 'qiita',
 			}),
 		});
 	};
@@ -54,24 +56,37 @@ export default function Form() {
 		e.preventDefault();
 		// if (zenn === zennValue) return;
 
-		const res = await fetch(`/api/zenn/${zennValue}`);
-		const json = await res.json();
-		console.log(json);
+		try {
+			const res = await fetch(`/api/zenn/${zennValue}`);
+			const items = (await res.json()) as Data[];
+			console.log(items);
 
-		const result = await fetch(`/api/user/${session?.user.id}`, {
-			method: 'PATCH',
-			body: JSON.stringify({
-				zenn: zennValue,
-			}),
-		});
+			const result = await fetch(`/api/user/${session?.user.id}`, {
+				method: 'PATCH',
+				body: JSON.stringify({
+					zenn: zennValue,
+				}),
+			});
 
-		if (result.ok) {
-			console.log('zenn value is update');
-			if (session && session.user) {
-				session.user.zenn = zennValue;
+			if (result.ok) {
+				console.log('zenn value is update');
+				if (session && session.user) {
+					session.user.zenn = zennValue;
+				}
+			} else {
+				throw new Error('result is not ok');
 			}
-		} else {
-			console.error('error');
+
+			const item = await fetch(`/api/item/`, {
+				method: 'POST',
+				body: JSON.stringify({
+					items,
+					uid: session?.user.id ?? '',
+					site: 'zenn',
+				}),
+			});
+		} catch (e) {
+			console.error(e);
 		}
 	};
 

@@ -12,12 +12,26 @@ export async function GET(
 	}
 ) {
 	const uid = params.uid;
-	const BASE_URL = 'https://zenn.dev';
-	const ENDPOINT = `${BASE_URL}/${uid}/feed?all=1`;
+	const BASE_URL = 'https://zenn.dev/';
+	const ENDPOINT = `https://zenn.dev/api/articles?username=${uid}`;
+
 	try {
-		const feed = await parser.parseURL(ENDPOINT);
-		// console.log(feed);
-		return NextResponse.json(feed.items, { status: 200 });
+		const feed = (await (await fetch(ENDPOINT)).json()) as { articles: { path?: string; title?: string; liked_count?: number }[] };
+		const items = feed.articles
+			.map((item) => {
+				const { path, title, liked_count } = item;
+				if (typeof path !== 'string' || typeof title !== 'string' || typeof liked_count !== 'number') return false;
+
+				return {
+					site: 'zenn',
+					link: `${BASE_URL}${path}`,
+					title,
+					likes_count: liked_count,
+				};
+			})
+			.filter((item): item is Exclude<typeof item, false> => item !== false);
+
+		return NextResponse.json(items, { status: 200 });
 	} catch (e) {
 		console.error(e);
 		return NextResponse.json({ ok: false }, { status: 404 });

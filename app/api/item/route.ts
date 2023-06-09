@@ -1,5 +1,6 @@
+import { Data } from '@/@types/qiita';
 import Item from '@/models/item';
-import { connectToDB } from '@/utils/database';
+import { connectToDatabase } from '@/utils/mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
@@ -10,30 +11,28 @@ export async function GET(
 		params: { uid?: string; objectId?: string };
 	}
 ) {
-	// const { uid, objectId } = params;
-	return NextResponse.json({ ok: true }, { status: 200 });
+	const { db } = await connectToDatabase();
+	const data = await db.collection('users').find().toArray();
+	return NextResponse.json({ ok: true, data }, { status: 200 });
 }
 
 export async function POST(req: NextRequest) {
-	const { item, uid } = await req.json();
-	console.log(item);
+	const { items, uid, site } = (await req.json()) as {
+		items: Data[];
+		uid: string;
+		site: 'qiita' | 'zenn';
+	};
 
-	if (!(item instanceof Array)) return;
+	if (!(items instanceof Array)) return;
 
 	try {
-		await connectToDB();
-		item.forEach(async (doc) => {
-			// console.log(doc.title);
-			const { title, url, likes_count } = doc;
-
-			await Item.create({
-				creator: uid,
-				title,
-				url,
-				likes_count,
-			});
-		});
+		const { client, db } = await connectToDatabase();
+		const data = items.map((doc) => ({ ...doc, creator: uid }));
+		await db.collection('items').deleteMany({ creator: uid, site });
+		await db.collection('items').insertMany(data);
 
 		return NextResponse.json({ ok: true }, { status: 201 });
-	} catch (e) {}
+	} catch (e) {
+		console.error(e);
+	}
 }
