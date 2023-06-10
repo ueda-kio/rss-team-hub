@@ -18,10 +18,10 @@ export default function RootLayout({ children, session }: { children: React.Reac
 					<SessionTest>{children}</SessionTest>
 					<br />
 					<Form />
+					{/* TODO: このままでよいのかどうか */}
+					{/* @ts-expect-error Server Component */}
+					<ServerSide />
 				</Provider>
-				{/* TODO: このままでよいのかどうか */}
-				{/* @ts-expect-error Server Component */}
-				<ServerSide />
 			</body>
 		</html>
 	);

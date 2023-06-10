@@ -1,6 +1,4 @@
-import { Session } from 'next-auth';
-import { getServerSession } from 'next-auth';
-import React from 'react';
+import { Session, getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]/route';
 
 const getSession = async () => {
