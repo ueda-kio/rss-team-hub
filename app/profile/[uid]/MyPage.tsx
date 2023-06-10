@@ -3,7 +3,7 @@ export default function MyPage({ uid }: { uid: string }) {
 		<div>
 			This is {uid} page.
 			<br />
-			profile.
+			MyPage.
 		</div>
 	);
 }

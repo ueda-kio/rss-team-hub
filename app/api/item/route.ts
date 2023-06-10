@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
 
 	try {
 		const { client, db } = await connectToDatabase();
-		const data = items.map((doc) => ({ ...doc, creatorId: uid }));
+		const data = items.map((doc) => ({ ...doc, creatorId: uid, site, publish: true }));
 		await db.collection('items').deleteMany({ creatorId: uid, site });
 		await db.collection('items').insertMany(data);
 

@@ -24,7 +24,7 @@ export async function GET(
 
 				return {
 					site: 'zenn',
-					link: `${BASE_URL}${path}`,
+					url: `${BASE_URL}${path}`,
 					title,
 					likes_count: liked_count,
 				};
