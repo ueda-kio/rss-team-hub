@@ -96,7 +96,8 @@ export default function Form() {
 	};
 
 	const onClick = async () => {
-		const item = await fetch(`/api/item/${session?.user.id}`);
+		// const item = await fetch(`/api/item/${session?.user.id}?test=hoge`);
+		const item = await fetch(`/api/item/?creatorId=${session?.user.id}&site=qiita`);
 		const j = await item.json();
 		console.log(j);
 	};

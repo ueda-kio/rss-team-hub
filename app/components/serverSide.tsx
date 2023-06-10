@@ -18,7 +18,7 @@ const getItems = async (session: Session) => {
 			likes_count: number;
 			creator: string;
 		}[];
-	} = await (await fetch(`http://localhost:3000/api/item/${id}`, { cache: 'no-cache' })).json();
+	} = await (await fetch(`http://localhost:3000/api/item/`, { cache: 'no-cache' })).json();
 	return data.data;
 };
 
