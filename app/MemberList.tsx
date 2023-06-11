@@ -23,7 +23,6 @@ export default async function MemberList() {
 	return (
 		<>
 			<h2>メンバー</h2>
-			<p>apiRoot: {apiRoot}</p>
 			<ul>
 				{users ? (
 					(users.length > MAX_LEN ? users.slice(MAX_LEN) : users).map((user) => (
