@@ -1,13 +1,14 @@
 import { MongoClient, Db } from 'mongodb';
 
-const { MONGODB_URI: uri, MONGODB_DB: dbName } = process.env;
+const { MONGODB_URI, MONGODB_DB } = process.env;
 
 let cachedClient: MongoClient;
 let cachedDb: Db;
 
 export async function connectToDatabase() {
-	if (!uri || !dbName) {
-		throw new Error(`Please define the MONGODB_${!uri ? 'URI' : 'DB'} environment variable inside .env.local`);
+	console.log('MONGODB_URI', MONGODB_URI);
+	if (!MONGODB_URI || !MONGODB_DB) {
+		throw new Error(`Please define the MONGODB_${!MONGODB_URI ? 'URI' : 'DB'} environment variable inside .env.local`);
 	}
 
 	if (cachedClient && cachedDb) {
@@ -15,8 +16,8 @@ export async function connectToDatabase() {
 		return { client: cachedClient, db: cachedDb };
 	}
 
-	const client = await MongoClient.connect(uri);
-	const db = await client.db(dbName);
+	const client = await MongoClient.connect(MONGODB_URI);
+	const db = await client.db(MONGODB_DB);
 	cachedClient = client;
 	cachedDb = db;
 
