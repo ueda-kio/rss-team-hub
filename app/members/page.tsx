@@ -1,5 +1,6 @@
 import { getServerSession } from '@/lib/getSession';
 import { isUserArray } from '@/lib/typeGuard';
+import Link from 'next/link';
 
 const getAllArticles = async () => {
 	try {
@@ -18,10 +19,24 @@ const getAllArticles = async () => {
 export default async function Members() {
 	const session = await getServerSession();
 	const users = await getAllArticles();
+	if (!users) {
+		return <>ユーザーの取得に失敗しました</>;
+	}
+
 	return (
 		<>
 			<h1>メンバー一覧画面</h1>
-			<ul>{users ? users.map((user) => <li key={user._id}>{user.username}</li>) : <>メンバーいません</>}</ul>
+			<ul>
+				{users.length ? (
+					users.map((user) => (
+						<li key={user._id}>
+							<Link href={`profile/${user._id}`}>{user.username}</Link>
+						</li>
+					))
+				) : (
+					<>メンバーはいません</>
+				)}
+			</ul>
 		</>
 	);
 }

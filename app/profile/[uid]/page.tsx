@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@api/auth/[...nextauth]/route';
 import { isArticleArray, isUser } from '@/lib/typeGuard';
 import Form from '@/app/components/Form';
+import Image from 'next/image';
 
 const getSession = async () => {
 	const session = await getServerSession(authOptions);
@@ -45,33 +46,38 @@ export default async function ProfilePage({ params }: { params: { uid: string } 
 	const articles = await getArticles(uid);
 	const user = await getUserData(uid);
 
-	if (session === null) {
-		return <>session is null</>;
-	} else if (articles === false) {
+	if (articles === false) {
 		return <>記事の取得に失敗しました。</>;
-	} else if (user === false) {
+	} else if (!user) {
 		return <>ユーザーの取得に失敗しました。</>;
 	}
 	const { qiitaArticles, zennArticles } = articles;
-	const isMyPage = uid === user?._id;
+	const isMyPage = uid === session?.user.id;
 
 	return (
 		<>
-			<h1>{isMyPage ? <>マイページ</> : <>ここは${user?.username}のページです。</>}</h1>
-			<h2>設定変更</h2>
-			<Form />
+			<h1>{isMyPage ? <>マイページ</> : <>ここは {user.username} のページです。</>}</h1>
+			<div style={{ display: 'flex', gap: '40px' }}>
+				<Image src={user.image ?? ''} alt={user.username ?? ''} width={200} height={200} />
+				{isMyPage && (
+					<div>
+						<h2>設定変更</h2>
+						<Form />
+					</div>
+				)}
+			</div>
 			<h2>記事一覧</h2>
 			<h3>qiita</h3>
 			<ul>
-				{qiitaArticles.map((article) => (
-					<li key={article._id}>{article.title}</li>
-				))}
+				{qiitaArticles.length ? (
+					qiitaArticles.map((article) => <li key={article._id}>{article.title}</li>)
+				) : (
+					<>記事はありません。</>
+				)}
 			</ul>
 			<h3>zenn</h3>
 			<ul>
-				{zennArticles.map((article) => (
-					<li key={article._id}>{article.title}</li>
-				))}
+				{zennArticles.length ? zennArticles.map((article) => <li key={article._id}>{article.title}</li>) : <>記事はありません。</>}
 			</ul>
 		</>
 	);

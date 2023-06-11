@@ -67,7 +67,7 @@ export default function Form() {
 					<button>登録</button>
 				</p>
 			</form>
-			<button onClick={() => signOut()}>Sign out</button>
+			<button onClick={() => signOut({ callbackUrl: '/' })}>Sign out</button>
 			<button type="button" onClick={onClick}>
 				button
 			</button>
