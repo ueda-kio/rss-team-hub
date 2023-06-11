@@ -33,6 +33,8 @@ export async function PATCH(
 			throw new Error('payload異常');
 		}
 
+		console.log({ patchData });
+
 		const { db } = await connectToDatabase();
 		const re = await db.collection('users').updateMany({ _id: new ObjectId(params.uid) }, { $set: { ...patchData } });
 

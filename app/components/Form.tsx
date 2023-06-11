@@ -7,15 +7,39 @@ export default function Form() {
 	const { data: session } = useSession();
 	const [qiita, setQiita] = useState('');
 	const [zenn, setZenn] = useState('');
+	const [username, setUsername] = useState('');
 	const sessionQiita = session?.user.qiita ?? '';
 	const sessionZenn = session?.user.zenn ?? '';
+	const sessionUsername = session?.user.name ?? '';
+
+	console.log(session?.user);
 
 	useEffect(() => {
 		setQiita(sessionQiita);
 		setZenn(sessionZenn);
-	}, [sessionQiita, sessionZenn]);
+		setUsername(sessionUsername);
+	}, [sessionQiita, sessionZenn, sessionUsername]);
 
-	const handleChangeUserName = async (e: React.FormEvent<HTMLFormElement>, site: 'qiita' | 'zenn') => {
+	const handleChangeUserName: React.FormEventHandler<HTMLFormElement> = async (e) => {
+		e.preventDefault();
+		try {
+			const uid = session?.user.id;
+			await fetch(`/api/user/${uid}`, {
+				method: 'PATCH',
+				body: JSON.stringify({ username }),
+			}).then(() => {
+				if (session && session.user) {
+					session.user.name = username;
+					console.log('username is changed.');
+				}
+			});
+		} catch (e) {
+			console.error(e);
+			return;
+		}
+	};
+
+	const handleChangeRssUserName = async (e: React.FormEvent<HTMLFormElement>, site: 'qiita' | 'zenn') => {
 		e.preventDefault();
 		try {
 			const uid = session?.user.id;
@@ -53,14 +77,21 @@ export default function Form() {
 
 	return (
 		<>
-			<form onSubmit={(e) => handleChangeUserName(e, 'qiita')}>
+			<form onSubmit={handleChangeUserName}>
+				<p>
+					<span>username: </span>
+					<input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+					<button>登録</button>
+				</p>
+			</form>
+			<form onSubmit={(e) => handleChangeRssUserName(e, 'qiita')}>
 				<p>
 					<span>qiita: </span>
 					<input type="text" value={qiita} onChange={(e) => setQiita(e.target.value)} />
 					<button>登録</button>
 				</p>
 			</form>
-			<form onSubmit={(e) => handleChangeUserName(e, 'zenn')}>
+			<form onSubmit={(e) => handleChangeRssUserName(e, 'zenn')}>
 				<p>
 					<span>zenn: </span>
 					<input type="text" value={zenn} onChange={(e) => setZenn(e.target.value)} />

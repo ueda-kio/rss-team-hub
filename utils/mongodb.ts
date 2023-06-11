@@ -6,7 +6,6 @@ let cachedClient: MongoClient;
 let cachedDb: Db;
 
 export async function connectToDatabase() {
-	console.log('MONGODB_URI', MONGODB_URI);
 	if (!MONGODB_URI || !MONGODB_DB) {
 		throw new Error(`Please define the MONGODB_${!MONGODB_URI ? 'URI' : 'DB'} environment variable inside .env.local`);
 	}

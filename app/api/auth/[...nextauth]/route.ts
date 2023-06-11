@@ -18,16 +18,15 @@ export const authOptions: NextAuthOptions = {
 			const { email } = session.user;
 			try {
 				if (!email) throw new Error('Email is undefined.');
-				// const sessionUser = await User.findOne({ email });
-				// if (!sessionUser) throw new Error('user is not exist.');
 
 				const { db } = await connectToDatabase();
 				const sessionUser = await db.collection('users').findOne({ email });
 				if (!sessionUser) throw new Error('user is not exist.');
 
-				const { _id, qiita, zenn } = sessionUser;
+				const { _id, username, qiita, zenn } = sessionUser;
 
 				session.user.id = _id.toString();
+				session.user.name = username;
 				session.user.qiita = qiita;
 				session.user.zenn = zenn;
 
