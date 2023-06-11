@@ -1,6 +1,6 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 
 export default function Form() {
@@ -60,7 +60,6 @@ export default function Form() {
 					<button>登録</button>
 				</p>
 			</form>
-			<br />
 			<form onSubmit={(e) => handleChangeUserName(e, 'zenn')}>
 				<p>
 					<span>zenn: </span>
@@ -68,6 +67,7 @@ export default function Form() {
 					<button>登録</button>
 				</p>
 			</form>
+			<button onClick={() => signOut()}>Sign out</button>
 			<button type="button" onClick={onClick}>
 				button
 			</button>

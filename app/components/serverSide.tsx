@@ -29,7 +29,6 @@ export default async function ServerSide() {
 	return (
 		<div>
 			<p>serverSide</p>
-			<div>{session?.user?.email}</div>
 			<ul>
 				{data.map((data) => (
 					<li key={data._id}>{data.title}</li>
