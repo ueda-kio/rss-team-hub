@@ -1,10 +1,11 @@
+import { apiRoot } from '@/lib/apiRoot';
 import { getServerSession } from '@/lib/getSession';
 import { isUserArray } from '@/lib/typeGuard';
 import Link from 'next/link';
 
 const getAllArticles = async () => {
 	try {
-		const res = await (await fetch('http://localhost:3000/api/user')).json();
+		const res = await (await fetch(`${apiRoot}/api/user`)).json();
 		if (!res.ok) throw new Error();
 
 		const users = res.data;
@@ -22,6 +23,7 @@ export default async function MemberList() {
 	return (
 		<>
 			<h2>メンバー</h2>
+			<p>apiRoot: {apiRoot}</p>
 			<ul>
 				{users ? (
 					(users.length > MAX_LEN ? users.slice(MAX_LEN) : users).map((user) => (

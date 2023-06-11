@@ -1,6 +1,8 @@
 import { MongoClient, Db } from 'mongodb';
 
-const { MONGODB_URI, MONGODB_DB } = process.env;
+// const { MONGODB_URI, MONGODB_DB } = process.env;
+const MONGODB_URI = 'mongodb+srv://gibson511511:b64RqFocKqydRtTI@rssteamhub.hhzedcz.mongodb.net/?retryWrites=true&w=majority';
+const MONGODB_DB = 'rss_team_hub';
 
 let cachedClient: MongoClient;
 let cachedDb: Db;

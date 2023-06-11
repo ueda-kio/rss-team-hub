@@ -1,9 +1,10 @@
+import { apiRoot } from '@/lib/apiRoot';
 import { getServerSession } from '@/lib/getSession';
 import { isArticleArray } from '@/lib/typeGuard';
 
 const getAllArticles = async () => {
 	try {
-		const res = await (await fetch('http://localhost:3000/api/article')).json();
+		const res = await (await fetch(`${apiRoot}/api/article`)).json();
 		if (!res.ok) throw new Error();
 
 		const articles = res.data;

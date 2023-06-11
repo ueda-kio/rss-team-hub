@@ -16,9 +16,5 @@ export default function ProfileButton() {
 		);
 	}
 
-	return status === 'loading' ? (
-		<div>loading...</div>
-	) : (
-		<button onClick={() => signIn(undefined, { callbackUrl: 'http://localhost:3000/' })}>Sign in</button>
-	);
+	return status === 'loading' ? <div>loading...</div> : <button onClick={() => signIn(undefined, { callbackUrl: '/' })}>Sign in</button>;
 }

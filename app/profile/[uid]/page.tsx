@@ -3,6 +3,7 @@ import { authOptions } from '@api/auth/[...nextauth]/route';
 import { isArticleArray, isUser } from '@/lib/typeGuard';
 import Form from '@/app/components/Form';
 import Image from 'next/image';
+import { apiRoot } from '@/lib/apiRoot';
 
 const getSession = async () => {
 	const session = await getServerSession(authOptions);
@@ -11,7 +12,7 @@ const getSession = async () => {
 
 const getArticles = async (uid: string) => {
 	try {
-		const items = await fetch(`http://localhost:3000/api/article/?creatorId=${uid}`, { cache: 'no-cache' })
+		const items = await fetch(`${apiRoot}/api/article/?creatorId=${uid}`, { cache: 'no-cache' })
 			.then((res) => res.json())
 			.then((json) => json.data);
 
@@ -29,7 +30,7 @@ const getArticles = async (uid: string) => {
 
 const getUserData = async (uid: string) => {
 	try {
-		const res = await (await fetch(`http://localhost:3000/api/user/${uid}`)).json();
+		const res = await (await fetch(`${apiRoot}/api/user/${uid}`)).json();
 		const user = res.user;
 		if (isUser(user)) {
 			return user;
