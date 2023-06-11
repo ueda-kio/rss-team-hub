@@ -1,16 +1,13 @@
-import Form from './components/Form';
-import ServerSide from './components/serverSide';
-import SessionTest from './sessionTest';
+import ArticleList from './ArticleList';
+import MemberList from './MemberList';
 
 export default function Home() {
 	return (
 		<>
-			<SessionTest>sessionTest</SessionTest>
-			<br />
-			<Form />
-			{/* TODO: このままでよいのかどうか */}
 			{/* @ts-expect-error Server Component */}
-			<ServerSide />
+			<ArticleList />
+			{/* @ts-expect-error Server Component */}
+			<MemberList />
 		</>
 	);
 }

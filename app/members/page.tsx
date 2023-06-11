@@ -1,6 +1,5 @@
 import { getServerSession } from '@/lib/getSession';
 import { isUserArray } from '@/lib/typeGuard';
-import React from 'react';
 
 const getAllArticles = async () => {
 	try {
@@ -21,7 +20,7 @@ export default async function Members() {
 	const users = await getAllArticles();
 	return (
 		<>
-			<h1>members list</h1>
+			<h1>メンバー一覧画面</h1>
 			<ul>{users ? users.map((user) => <li key={user._id}>{user.username}</li>) : <>メンバーいません</>}</ul>
 		</>
 	);

@@ -1,5 +1,6 @@
 import { getServerSession } from '@/lib/getSession';
 import { isArticleArray } from '@/lib/typeGuard';
+import Link from 'next/link';
 
 const getAllArticles = async () => {
 	try {
@@ -15,13 +16,23 @@ const getAllArticles = async () => {
 	}
 };
 
-export default async function Articles() {
-	const session = await getServerSession();
+export default async function ArticleList() {
 	const articles = await getAllArticles();
+	const MAX_LEN = 5;
 	return (
 		<>
-			<h1>記事一覧画面</h1>
-			<ul>{articles ? articles.map((article) => <li key={article._id}>{article.title}</li>) : <>記事はありません</>}</ul>
+			<h2>投稿記事</h2>
+			<ul>
+				{articles &&
+					articles.slice(MAX_LEN).map((article) => (
+						<li key={article._id}>
+							<a href={article.url} target="_blank" rel="noopener noreferrer">
+								{article.title}
+							</a>
+						</li>
+					))}
+			</ul>
+			<Link href="/articles">記事一覧へ→</Link>
 		</>
 	);
 }
