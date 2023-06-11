@@ -21,7 +21,7 @@ export default function Form() {
 			const uid = session?.user.id;
 			if (typeof session === null || typeof uid === 'undefined') throw new Error();
 
-			await fetch('/api/item', {
+			await fetch('/api/article', {
 				method: 'POST',
 				body: JSON.stringify({
 					uid,
@@ -45,8 +45,8 @@ export default function Form() {
 	};
 
 	const onClick = async () => {
-		// const item = await fetch(`/api/item/${session?.user.id}?test=hoge`);
-		const item = await fetch(`/api/item/?creatorId=${session?.user.id}&site=qiita`);
+		// const item = await fetch(`/api/article/${session?.user.id}?test=hoge`);
+		const item = await fetch(`/api/article/?creatorId=${session?.user.id}&site=qiita`);
 		const j = await item.json();
 		console.log(j);
 	};

@@ -1,9 +1,6 @@
 import type { Metadata } from 'next';
 import { Session } from 'next-auth';
 import Provider from './components/Provider';
-import SessionTest from './sessionTest';
-import ServerSide from './components/serverSide';
-import Form from './components/Form';
 
 export const metadata: Metadata = {
 	title: '自主制作',

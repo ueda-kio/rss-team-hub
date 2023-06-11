@@ -11,11 +11,11 @@ const getSession = async () => {
 
 const getArticles = async (session: Session) => {
 	try {
-		const items = await fetch(`http://localhost:3000/api/item/?creatorId=${session.user.id}`, { cache: 'no-cache' })
+		const items = await fetch(`http://localhost:3000/api/article/?creatorId=${session.user.id}`, { cache: 'no-cache' })
 			.then((res) => res.json())
 			.then((json) => json.data);
 
-		console.log(items);
+		// console.log(items);
 		if (!isArticleArray(items)) throw new Error('記事の型に問題があります。');
 
 		const qiitaArticles = items.filter((item) => item.site === 'qiita');

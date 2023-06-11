@@ -1,19 +1,7 @@
-export type User = {
-	_id: string;
-	email: string;
-	image: string;
-	qiita: string;
-	username: string;
-	zenn: string;
-	__v: number;
-};
+import { articleTypeObj, userTypeObj } from '@/lib/typeGuard';
 
-export type Article = {
-	_id: string;
-	title: string;
-	url: string;
-	likes_count: number;
-	publish: boolean;
-	creatorId: string;
-	site: 'qiita' | 'zenn';
-};
+export type User = typeof userTypeObj & { patchData?: any };
+export type PartialUser = Partial<User>;
+
+export type Article = Omit<typeof articleTypeObj, 'site'> & { site: 'qiita' | 'zenn' };
+export type ArticleArray = Article[];

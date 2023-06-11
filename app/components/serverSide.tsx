@@ -1,10 +1,5 @@
-import { Session, getServerSession } from 'next-auth';
-import { authOptions } from '@api/auth/[...nextauth]/route';
-
-const getSession = async () => {
-	const session = await getServerSession(authOptions);
-	return session;
-};
+import { Session } from 'next-auth';
+import { getServerSession } from '@/lib/getSession';
 
 const getItems = async (session: Session) => {
 	const { id } = session.user;
@@ -18,12 +13,12 @@ const getItems = async (session: Session) => {
 			likes_count: number;
 			creator: string;
 		}[];
-	} = await (await fetch(`http://localhost:3000/api/item/`, { cache: 'no-cache' })).json();
+	} = await (await fetch(`http://localhost:3000/api/article/`, { cache: 'no-cache' })).json();
 	return data.data;
 };
 
 export default async function ServerSide() {
-	const session = await getSession();
+	const session = await getServerSession();
 
 	if (session === null) {
 		return <p>serverSide</p>;
