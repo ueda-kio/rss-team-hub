@@ -5,8 +5,8 @@ import Link from 'next/link';
 import ProfileButton from './ProfileButton';
 
 export const metadata: Metadata = {
-	title: '自主制作',
-	description: '初期説明文',
+	title: 'RSS TEAM HUB',
+	description: '会社メンバーの投稿記事を一覧で取得するサイト。',
 };
 
 export default function RootLayout({ children, session }: { children: React.ReactNode; session: Session }) {
