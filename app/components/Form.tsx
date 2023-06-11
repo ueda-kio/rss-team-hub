@@ -1,98 +1,47 @@
 'use client';
 
-import { Article, Data } from '@/@types/qiita';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 
 export default function Form() {
 	const { data: session } = useSession();
-	const qiita = session?.user.qiita ?? '';
-	const zenn = session?.user.zenn ?? '';
-	const [qiitaValue, setQiitaValue] = useState('');
-	const [zennValue, setZennValue] = useState('');
+	const [qiita, setQiita] = useState('');
+	const [zenn, setZenn] = useState('');
+	const sessionQiita = session?.user.qiita ?? '';
+	const sessionZenn = session?.user.zenn ?? '';
 
 	useEffect(() => {
-		setQiitaValue(qiita);
-		setZennValue(zenn);
-	}, [qiita, zenn]);
+		setQiita(sessionQiita);
+		setZenn(sessionZenn);
+	}, [sessionQiita, sessionZenn]);
 
-	const handleSubmitQiita = async (e: React.FormEvent<HTMLFormElement>) => {
+	const handleChangeUserName = async (e: React.FormEvent<HTMLFormElement>, site: 'qiita' | 'zenn') => {
 		e.preventDefault();
-		// if (qiita === qiitaValue) return;
-
-		const res = await fetch(`/api/qiita/${qiitaValue}`);
-		const items = (await res.json()) as Data[];
-		console.log(items);
-
-		const result = await fetch(`/api/user/${session?.user.id}`, {
-			method: 'PATCH',
-			body: JSON.stringify({
-				qiita: qiitaValue,
-			}),
-		});
-
-		if (result.ok) {
-			// TODO: ダサすぎ問題
-			if (session && session.user) {
-				session.user.qiita = qiitaValue;
-			}
-		} else {
-			console.error('error');
-		}
-
-		const item = await fetch(`/api/item/`, {
-			method: 'POST',
-			body: JSON.stringify({
-				items,
-				uid: session?.user.id ?? '',
-				site: 'qiita',
-			}),
-		});
-	};
-
-	const handleSubmitZenn = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		// if (zenn === zennValue) return;
-
 		try {
-			const res = await fetch(`/api/zenn/${zennValue}`);
-			const items = (await res.json()) as Data[];
-			console.log(items);
+			const uid = session?.user.id;
+			if (typeof session === null || typeof uid === 'undefined') throw new Error();
 
-			const result = await fetch(`/api/user/${session?.user.id}`, {
-				method: 'PATCH',
-				body: JSON.stringify({
-					zenn: zennValue,
-				}),
-			});
-
-			if (result.ok) {
-				if (session && session.user) {
-					session.user.zenn = zennValue;
-				}
-			} else {
-				throw new Error('result is not ok');
-			}
-
-			const item = await fetch(`/api/item/`, {
+			await fetch('/api/item', {
 				method: 'POST',
 				body: JSON.stringify({
-					items,
-					uid: session?.user.id ?? '',
-					site: 'zenn',
+					uid,
+					username: site === 'qiita' ? qiita : zenn,
+					site,
 				}),
+			}).catch((e) => e);
+
+			await fetch(`/api/user/${uid}`, {
+				method: 'PATCH',
+				body: JSON.stringify(site === 'qiita' ? { qiita } : { zenn }),
+			}).then(() => {
+				if (session && session.user) {
+					site === 'qiita' ? (session.user.qiita = qiita) : (session.user.zenn = zenn);
+				}
 			});
 		} catch (e) {
 			console.error(e);
+			return;
 		}
-	};
-
-	const onChangeQiita = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setQiitaValue(() => e.target.value);
-	};
-
-	const onChangeZenn = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setZennValue(() => e.target.value);
 	};
 
 	const onClick = async () => {
@@ -104,18 +53,18 @@ export default function Form() {
 
 	return (
 		<>
-			<form onSubmit={handleSubmitQiita}>
+			<form onSubmit={(e) => handleChangeUserName(e, 'qiita')}>
 				<p>
 					<span>qiita: </span>
-					<input type="text" value={qiitaValue} onChange={onChangeQiita} />
+					<input type="text" value={qiita} onChange={(e) => setQiita(e.target.value)} />
 					<button>登録</button>
 				</p>
 			</form>
 			<br />
-			<form onSubmit={handleSubmitZenn}>
+			<form onSubmit={(e) => handleChangeUserName(e, 'zenn')}>
 				<p>
 					<span>zenn: </span>
-					<input type="text" value={zennValue} onChange={onChangeZenn} />
+					<input type="text" value={zenn} onChange={(e) => setZenn(e.target.value)} />
 					<button>登録</button>
 				</p>
 			</form>

@@ -1,4 +1,3 @@
-import { Article } from '@/@types/qiita';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
@@ -28,7 +27,7 @@ export async function GET(
 			return NextResponse.json({ ok: false }, { status: 404 });
 		}
 
-		const json = (await res.json()) as Article[];
+		const json = (await res.json()) as { title: string; url: string; likes_count: number }[];
 		const posts = json.map((post) => {
 			const { title, url, likes_count } = post;
 			return {

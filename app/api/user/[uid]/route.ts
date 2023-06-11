@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/utils/mongodb';
 import { ObjectId } from 'mongodb';
+import { isIncludeUserType } from '@/lib/typeGuard';
 
 export async function GET(
 	req: NextRequest,
@@ -26,18 +27,14 @@ export async function PATCH(
 	}
 ) {
 	try {
-		// TODO: 型定義
-		const { qiita, zenn } = await req.json();
+		const patchData = await req.json();
+		if (!isIncludeUserType(patchData)) {
+			console.log('patchData', patchData);
+			throw new Error('payload異常');
+		}
 
 		const { db } = await connectToDatabase();
-
-		if (typeof qiita === 'string') {
-			await db.collection('users').updateOne({ _id: new ObjectId(params.uid) }, { $set: { qiita } });
-		} else if (typeof zenn === 'string') {
-			const res = await db.collection('users').updateOne({ _id: new ObjectId(params.uid) }, { $set: { zenn } });
-		} else {
-			throw new Error('"site" must be either "qiita" or "zenn"');
-		}
+		const re = await db.collection('users').updateMany({ _id: new ObjectId(params.uid) }, { $set: { ...patchData } });
 
 		return NextResponse.json({ ok: 'ok' }, { status: 201 });
 	} catch (e) {

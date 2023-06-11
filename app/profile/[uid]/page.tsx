@@ -2,8 +2,6 @@ import { Session, getServerSession } from 'next-auth';
 import { authOptions } from '@api/auth/[...nextauth]/route';
 import MyPage from '@/app/profile/[uid]/MyPage';
 import Profile from '@/app/profile/[uid]/Profile';
-import { Data } from '@/@types/qiita';
-import { Article } from '@/@types';
 import { isArticleArray } from '@/lib/typeGuard';
 
 const getSession = async () => {
