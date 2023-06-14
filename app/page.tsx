@@ -1,5 +1,6 @@
 import ArticleList from './ArticleList';
 import MemberList from './MemberList';
+import SessionTest from './sessionTest';
 
 export default function Home() {
 	return (
@@ -8,6 +9,7 @@ export default function Home() {
 			<ArticleList />
 			{/* @ts-expect-error Server Component */}
 			<MemberList />
+			<SessionTest />
 		</>
 	);
 }
