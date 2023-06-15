@@ -1,22 +1,43 @@
 import { Article } from '@/@types';
+import { prisma } from '@/lib/prisma';
 import { connectToDatabase } from '@/utils/mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
-	const { db } = await connectToDatabase();
-	const itemsCollection = await db.collection('items');
+	try {
+		const data = await (async () => {
+			if (req.nextUrl.search === '') {
+				return await prisma.article.findMany();
+			} else {
+				const query = req.nextUrl.searchParams;
+				const findOption = Object.fromEntries(query.entries());
+				return await prisma.article.findMany({
+					where: {
+						...findOption,
+					},
+				});
+			}
+		})();
+		return NextResponse.json({ ok: true, data }, { status: 200 });
+	} catch (e) {
+		console.error(e);
+		return NextResponse.json({ ok: false }, { status: 500 });
+	}
 
-	const data = await (async () => {
-		if (req.nextUrl.search === '') {
-			return await itemsCollection.find().toArray();
-		} else {
-			const query = req.nextUrl.searchParams;
-			const findOption = Object.fromEntries(query.entries());
-			return await itemsCollection.find(findOption).toArray();
-		}
-	})();
+	// const { db } = await connectToDatabase();
+	// const itemsCollection = await db.collection('items');
 
-	return NextResponse.json({ ok: true, data }, { status: 200 });
+	// const data = await (async () => {
+	// 	if (req.nextUrl.search === '') {
+	// 		return await itemsCollection.find().toArray();
+	// 	} else {
+	// 		const query = req.nextUrl.searchParams;
+	// 		const findOption = Object.fromEntries(query.entries());
+	// 		return await itemsCollection.find(findOption).toArray();
+	// 	}
+	// })();
+
+	// return NextResponse.json({ ok: true, data }, { status: 200 });
 }
 
 export async function POST(req: NextRequest) {
@@ -50,7 +71,7 @@ export async function POST(req: NextRequest) {
 				url?: string;
 				likes_count?: number;
 			}[];
-			const articles: Omit<Article, '_id'>[] = feed
+			const articles: Omit<Article, 'id'>[] = feed
 				.map((post) => {
 					const { title, url, likes_count } = post;
 					if (typeof url !== 'string' || typeof title !== 'string' || typeof likes_count !== 'number') return false;
@@ -83,7 +104,7 @@ export async function POST(req: NextRequest) {
 					liked_count?: number;
 				}[];
 			};
-			const articles: Omit<Article, '_id'>[] = feed.articles
+			const articles: Omit<Article, 'id'>[] = feed.articles
 				.map((item) => {
 					const { path, title, liked_count } = item;
 					if (typeof path !== 'string' || typeof title !== 'string' || typeof liked_count !== 'number') return false;
@@ -107,7 +128,7 @@ export async function POST(req: NextRequest) {
 	};
 
 	try {
-		const { db } = await connectToDatabase();
+		// const { db } = await connectToDatabase();
 		const articles = await (async () => {
 			if (site === 'qiita') {
 				return await fetchQiitaApi(username, uid);
@@ -119,8 +140,18 @@ export async function POST(req: NextRequest) {
 		if (articles === false) throw new Error('"site"は"qiita"|"zenn"のみ');
 		if (articles instanceof NextResponse) return articles;
 
-		await db.collection('items').deleteMany({ creatorId: uid, site });
-		await db.collection('items').insertMany(articles);
+		await prisma.article.deleteMany({
+			where: {
+				creatorId: uid,
+				site,
+			},
+		});
+		await prisma.article.createMany({
+			data: articles,
+		});
+
+		// await db.collection('items').deleteMany({ creatorId: uid, site });
+		// await db.collection('items').insertMany(articles);
 
 		return NextResponse.json({ ok: true }, { status: 201 });
 	} catch (e) {

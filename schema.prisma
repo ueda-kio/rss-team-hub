@@ -49,8 +49,8 @@ model User {
   email         String?   @unique
   emailVerified DateTime? @map("email_verified")
   image         String?
-  qiita         String?
-  zenn          String?
+  qiita         String    @default("")
+  zenn          String    @default("")
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   articles      Article[]

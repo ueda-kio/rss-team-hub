@@ -26,7 +26,7 @@ export default function Form() {
 			const uid = session?.user.id;
 			await fetch(`/api/user/${uid}`, {
 				method: 'PATCH',
-				body: JSON.stringify({ username }),
+				body: JSON.stringify({ name: username }),
 			}).then(() => {
 				if (session && session.user) {
 					session.user.name = username;

@@ -22,6 +22,8 @@ export const authOptions: NextAuthOptions = {
 			try {
 				if (!email) throw new Error('Email is undefined.');
 
+				console.log('session', session);
+
 				// const { db } = await connectToDatabase();
 				// const sessionUser = await db.collection('users').findOne({ email });
 				// if (!sessionUser) throw new Error('user is not exist.');
@@ -31,6 +33,8 @@ export const authOptions: NextAuthOptions = {
 						email,
 					},
 				});
+
+				console.log('sessionUser', sessionUser);
 
 				if (sessionUser === null) throw new Error('ユーザーが見つかりませんでした。');
 
@@ -68,23 +72,25 @@ export const authOptions: NextAuthOptions = {
 				// 	});
 				// }
 
-				const user = await prisma.user.findFirst({
-					where: {
-						email,
-					},
-				});
+				// const user = await prisma.user.findFirst({
+				// 	where: {
+				// 		email,
+				// 	},
+				// });
 
-				if (user === null) {
-					await prisma.user.create({
-						data: {
-							email: profile.email,
-							name: profile.name?.replace(' ', ''),
-							image: profile.picture ?? '',
-							qiita: '',
-							zenn: '',
-						},
-					});
-				}
+				// console.log('user', user);
+
+				// if (user === null) {
+				// 	await prisma.user.create({
+				// 		data: {
+				// 			email: profile.email,
+				// 			name: profile.name?.replace(' ', ''),
+				// 			image: profile.picture ?? '',
+				// 			qiita: '',
+				// 			zenn: '',
+				// 		},
+				// 	});
+				// }
 
 				// const userExists = await User.findOne({ email: profile.email });
 				// if (!userExists) {
