@@ -20,18 +20,23 @@ const getAllArticles = async () => {
 export default async function ArticleList() {
 	const articles = await getAllArticles();
 	const MAX_LEN = 5;
+
 	return (
 		<>
 			<h2>投稿記事</h2>
 			<ul>
-				{articles &&
-					articles.slice(MAX_LEN).map((article) => (
-						<li key={article._id}>
+				{articles && articles.length ? (
+					// 上限数のみ表示
+					(articles.length > MAX_LEN ? articles.slice(0, MAX_LEN) : articles).map((article) => (
+						<li key={article.id}>
 							<a href={article.url} target="_blank" rel="noopener noreferrer">
 								{article.title}
 							</a>
 						</li>
-					))}
+					))
+				) : (
+					<>記事がありません。</>
+				)}
 			</ul>
 			<Link href="/articles">記事一覧へ→</Link>
 		</>

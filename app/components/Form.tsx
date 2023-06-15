@@ -26,7 +26,7 @@ export default function Form() {
 			const uid = session?.user.id;
 			await fetch(`/api/user/${uid}`, {
 				method: 'PATCH',
-				body: JSON.stringify({ username }),
+				body: JSON.stringify({ name: username }),
 			}).then(() => {
 				if (session && session.user) {
 					session.user.name = username;
@@ -70,9 +70,11 @@ export default function Form() {
 
 	const onClick = async () => {
 		// const item = await fetch(`/api/article/${session?.user.id}?test=hoge`);
-		const item = await fetch(`/api/article/?creatorId=${session?.user.id}&site=qiita`);
-		const j = await item.json();
-		console.log(j);
+		// const item = await fetch(`/api/article/?creatorId=${session?.user.id}&site=qiita`);
+		// const j = await item.json();
+		// console.log(j);
+		const users = await (await fetch(`/api/postgl/`)).json();
+		console.log(users);
 	};
 
 	return (
