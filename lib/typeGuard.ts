@@ -4,7 +4,7 @@ const isSiteType = (str: string): str is 'qiita' | 'zenn' => (['qiita', 'zenn'] 
 
 // ===================== Article Type =====================
 export const articleTypeObj = {
-	id: '',
+	_id: '',
 	title: '',
 	url: '',
 	likes_count: 0,
@@ -19,15 +19,13 @@ export const isArticleArray = (arr: any[]): arr is Article[] => arr.every((el) =
 
 // ===================== User Type =====================
 export const userTypeObj = {
-	id: '',
-	name: '',
+	_id: '',
 	email: '',
 	image: '',
 	qiita: '',
+	username: '',
 	zenn: '',
-	createdAt: '',
-	updatedAt: '',
-	// __v: 0,
+	__v: 0,
 };
 export const isUser = (obj: any): obj is User => {
 	return Object.entries(userTypeObj).every(([key, value]) => typeof value === typeof obj[key]);
@@ -38,15 +36,13 @@ export const isIncludeUserType = (obj: { [k: string]: string | number }): obj is
 	const bool = Object.keys(obj).every((key) => Object.keys(userTypeObj).some((userKey) => userKey === key));
 	if (!bool) return false;
 
-	const { _id, email, image, qiita, name, zenn, createdAt, updatedAt } = obj;
+	const { _id, email, image, qiita, username, zenn } = obj;
 	return (
 		typeof _id === 'string' ||
 		typeof email === 'string' ||
 		typeof image === 'string' ||
 		typeof qiita === 'string' ||
-		typeof name === 'string' ||
-		typeof zenn === 'string' ||
-		typeof createdAt === 'string' ||
-		typeof updatedAt === 'string'
+		typeof username === 'string' ||
+		typeof zenn === 'string'
 	);
 };

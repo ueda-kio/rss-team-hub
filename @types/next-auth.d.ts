@@ -16,9 +16,8 @@ declare module 'next-auth' {
 
 declare module 'next-auth/jwt' {
 	interface JWT {
-		id: string;
-		name: string;
-		qiita: string;
-		zenn: string;
+		// Firebaseの認証情報
+		uid: string;
+		emailVerified: boolean;
 	}
 }

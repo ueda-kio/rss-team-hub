@@ -3,18 +3,15 @@ import { getServerSession } from '@/lib/getSession';
 import { isUserArray } from '@/lib/typeGuard';
 import Link from 'next/link';
 
-const getAllUsers = async () => {
+const getAllArticles = async () => {
 	try {
 		const res = await (await fetch(`${apiRoot}/api/user`)).json();
 		if (!res.ok) throw new Error();
 
 		const users = res.data;
-		if (!isUserArray(users)) {
-			console.log(users);
-			throw new Error('userの型にエラーがあります。');
+		if (isUserArray(users)) {
+			return users;
 		}
-
-		return users;
 	} catch (e) {
 		console.error(e);
 	}
@@ -22,7 +19,7 @@ const getAllUsers = async () => {
 
 export default async function Members() {
 	const session = await getServerSession();
-	const users = await getAllUsers();
+	const users = await getAllArticles();
 	if (!users) {
 		return <>ユーザーの取得に失敗しました</>;
 	}
@@ -33,8 +30,8 @@ export default async function Members() {
 			<ul>
 				{users.length ? (
 					users.map((user) => (
-						<li key={user.id}>
-							<Link href={`profile/${user.id}`}>{user.name}</Link>
+						<li key={user._id}>
+							<Link href={`profile/${user._id}`}>{user.username}</Link>
 						</li>
 					))
 				) : (

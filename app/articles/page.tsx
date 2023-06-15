@@ -29,7 +29,7 @@ export default async function Articles() {
 			<ul>
 				{articles.length ? (
 					articles.map((article) => (
-						<li key={article.id}>
+						<li key={article._id}>
 							<a href={article.url} target="_blank" rel="noopener noreferrer">
 								{article.title}
 							</a>
