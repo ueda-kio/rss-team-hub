@@ -1,6 +1,5 @@
 import { Article } from '@/@types';
 import { prisma } from '@/lib/prisma';
-import { connectToDatabase } from '@/utils/mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
@@ -23,21 +22,6 @@ export async function GET(req: NextRequest) {
 		console.error(e);
 		return NextResponse.json({ ok: false }, { status: 500 });
 	}
-
-	// const { db } = await connectToDatabase();
-	// const itemsCollection = await db.collection('items');
-
-	// const data = await (async () => {
-	// 	if (req.nextUrl.search === '') {
-	// 		return await itemsCollection.find().toArray();
-	// 	} else {
-	// 		const query = req.nextUrl.searchParams;
-	// 		const findOption = Object.fromEntries(query.entries());
-	// 		return await itemsCollection.find(findOption).toArray();
-	// 	}
-	// })();
-
-	// return NextResponse.json({ ok: true, data }, { status: 200 });
 }
 
 export async function POST(req: NextRequest) {
@@ -128,7 +112,6 @@ export async function POST(req: NextRequest) {
 	};
 
 	try {
-		// const { db } = await connectToDatabase();
 		const articles = await (async () => {
 			if (site === 'qiita') {
 				return await fetchQiitaApi(username, uid);
@@ -149,9 +132,6 @@ export async function POST(req: NextRequest) {
 		await prisma.article.createMany({
 			data: articles,
 		});
-
-		// await db.collection('items').deleteMany({ creatorId: uid, site });
-		// await db.collection('items').insertMany(articles);
 
 		return NextResponse.json({ ok: true }, { status: 201 });
 	} catch (e) {
