@@ -1,5 +1,6 @@
 'use client';
 
+import { User } from '@prisma/client';
 import { signOut, useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 
@@ -73,7 +74,7 @@ export default function Form() {
 		// const item = await fetch(`/api/article/?creatorId=${session?.user.id}&site=qiita`);
 		// const j = await item.json();
 		// console.log(j);
-		const users = await (await fetch(`/api/postgl/`)).json();
+		const users: User[] = await (await fetch(`/api/postgl/`)).json();
 		console.log(users);
 	};
 

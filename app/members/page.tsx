@@ -1,6 +1,7 @@
 import { apiRoot } from '@/lib/apiRoot';
 import { getServerSession } from '@/lib/getSession';
 import { isUserArray } from '@/lib/typeGuard';
+import { User } from '@prisma/client';
 import Link from 'next/link';
 
 const getAllUsers = async () => {
@@ -8,12 +9,7 @@ const getAllUsers = async () => {
 		const res = await (await fetch(`${apiRoot}/api/user`)).json();
 		if (!res.ok) throw new Error();
 
-		const users = res.data;
-		if (!isUserArray(users)) {
-			console.log(users);
-			throw new Error('userの型にエラーがあります。');
-		}
-
+		const users: User[] = res.data;
 		return users;
 	} catch (e) {
 		console.error(e);

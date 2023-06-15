@@ -5,6 +5,7 @@ import Form from '@/app/components/Form';
 import Image from 'next/image';
 import { apiRoot } from '@/lib/apiRoot';
 import { Suspense } from 'react';
+import { Article, User } from '@prisma/client';
 
 const getSession = async () => {
 	const session = await getServerSession(authOptions);
@@ -13,12 +14,9 @@ const getSession = async () => {
 
 const getArticles = async (uid: string) => {
 	try {
-		const items = await fetch(`${apiRoot}/api/article/?creatorId=${uid}`, { cache: 'no-cache' })
+		const items: Article[] = await fetch(`${apiRoot}/api/article/?creatorId=${uid}`)
 			.then((res) => res.json())
 			.then((json) => json.data);
-
-		// console.log(items);
-		if (!isArticleArray(items)) throw new Error('記事の型に問題があります。');
 
 		const qiitaArticles = items.filter((item) => item.site === 'qiita');
 		const zennArticles = items.filter((item) => item.site === 'zenn');
@@ -32,11 +30,7 @@ const getArticles = async (uid: string) => {
 const getUserData = async (uid: string) => {
 	try {
 		const res = await (await fetch(`${apiRoot}/api/user/${uid}`)).json();
-		const user = res.user;
-		if (!isUser(user)) {
-			console.log(user);
-			throw new Error('userの型にエラーがあります。');
-		}
+		const user: User = res.user;
 		return user;
 	} catch (e) {
 		console.error(e);

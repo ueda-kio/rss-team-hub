@@ -1,6 +1,5 @@
 import { apiRoot } from '@/lib/apiRoot';
-import { getServerSession } from '@/lib/getSession';
-import { isArticleArray } from '@/lib/typeGuard';
+import { Article } from '@prisma/client';
 import Link from 'next/link';
 
 const getAllArticles = async () => {
@@ -8,10 +7,8 @@ const getAllArticles = async () => {
 		const res = await (await fetch(`${apiRoot}/api/article`)).json();
 		if (!res.ok) throw new Error();
 
-		const articles = res.data;
-		if (isArticleArray(articles)) {
-			return articles;
-		}
+		const articles: Article[] = res.data;
+		return articles;
 	} catch (e) {
 		console.error(e);
 	}
