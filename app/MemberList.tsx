@@ -28,7 +28,7 @@ export default async function MemberList() {
 		<>
 			<h2>メンバー</h2>
 			<ul>
-				{users ? (
+				{users && users.length ? (
 					// 上限数のみ表示
 					(users.length > MAX_LEN ? users.slice(0, MAX_LEN) : users).map((user) => (
 						<li key={user.id}>

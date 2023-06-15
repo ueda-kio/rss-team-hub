@@ -25,7 +25,7 @@ export default async function ArticleList() {
 		<>
 			<h2>投稿記事</h2>
 			<ul>
-				{articles &&
+				{articles && articles.length ? (
 					// 上限数のみ表示
 					(articles.length > MAX_LEN ? articles.slice(0, MAX_LEN) : articles).map((article) => (
 						<li key={article.id}>
@@ -33,7 +33,10 @@ export default async function ArticleList() {
 								{article.title}
 							</a>
 						</li>
-					))}
+					))
+				) : (
+					<>記事がありません。</>
+				)}
 			</ul>
 			<Link href="/articles">記事一覧へ→</Link>
 		</>
