@@ -6,25 +6,11 @@ import Image from 'next/image';
 import { apiRoot } from '@/lib/apiRoot';
 import { Suspense } from 'react';
 import { Article, User } from '@prisma/client';
+import ArticleList from './ArticleList';
 
 const getSession = async () => {
 	const session = await getServerSession(authOptions);
 	return session;
-};
-
-const getArticles = async (uid: string) => {
-	try {
-		const items: Article[] = await fetch(`${apiRoot}/api/article/?creatorId=${uid}`)
-			.then((res) => res.json())
-			.then((json) => json.data);
-
-		const qiitaArticles = items.filter((item) => item.site === 'qiita');
-		const zennArticles = items.filter((item) => item.site === 'zenn');
-		return { qiitaArticles, zennArticles };
-	} catch (e) {
-		console.error(e);
-		return false;
-	}
 };
 
 const getUserData = async (uid: string) => {
@@ -38,34 +24,7 @@ const getUserData = async (uid: string) => {
 	}
 };
 
-async function ArticleList({ params, site }: { params: { uid: string }; site: string }) {
-	const uid = decodeURI(params.uid);
-	const articles = await getArticles(uid);
-	if (!articles) {
-		return <>記事の取得に失敗しました。</>;
-	}
-
-	const { qiitaArticles, zennArticles } = articles;
-
-	return (
-		<ul>
-			{site === 'qiita' ? (
-				qiitaArticles.length ? (
-					qiitaArticles.map((article) => <li key={article.id}>{article.title}</li>)
-				) : (
-					<>記事はありません。</>
-				)
-			) : zennArticles.length ? (
-				zennArticles.map((article) => <li key={article.id}>{article.title}</li>)
-			) : (
-				<>記事はありません。</>
-			)}
-		</ul>
-	);
-}
-
-async function ProfileImage({ params }: { params: { uid: string } }) {
-	const uid = decodeURI(params.uid);
+async function ProfileImage({ uid }: { uid: string }) {
 	const user = await getUserData(uid);
 	if (!user) {
 		return <>ユーザーの取得に失敗しました。</>;
@@ -77,15 +36,6 @@ async function ProfileImage({ params }: { params: { uid: string } }) {
 export default async function ProfilePage({ params }: { params: { uid: string } }) {
 	const uid = decodeURI(params.uid);
 	const session = await getSession();
-	// const articles = await getArticles(uid);
-	// const user = await getUserData(uid);
-
-	// if (!articles) {
-	// 	return <>記事の取得に失敗しました。</>;
-	// } else if (!user) {
-	// 	return <>ユーザーの取得に失敗しました。</>;
-	// }
-	// const { qiitaArticles, zennArticles } = articles;
 	const isMyPage = uid === session?.user.id;
 
 	return (
@@ -94,7 +44,7 @@ export default async function ProfilePage({ params }: { params: { uid: string } 
 			<div style={{ display: 'flex', gap: '40px' }}>
 				<Suspense fallback={<>loading...</>}>
 					{/* @ts-expect-error Server Component */}
-					<ProfileImage params={params} />
+					<ProfileImage uid={uid} />
 				</Suspense>
 				{isMyPage && (
 					<div>
@@ -105,15 +55,9 @@ export default async function ProfilePage({ params }: { params: { uid: string } 
 			</div>
 			<h2>記事一覧</h2>
 			<h3>qiita</h3>
-			<Suspense fallback={<>loading...</>}>
-				{/* @ts-expect-error Server Component */}
-				<ArticleList params={params} site="qiita" />
-			</Suspense>
+			<ArticleList uid={uid} site="qiita" />
 			<h3>zenn</h3>
-			<Suspense fallback={<>loading...</>}>
-				{/* @ts-expect-error Server Component */}
-				<ArticleList params={params} site="zenn" />
-			</Suspense>
+			<ArticleList uid={uid} site="zenn" />
 		</>
 	);
 }

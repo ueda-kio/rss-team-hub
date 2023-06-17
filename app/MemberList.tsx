@@ -1,35 +1,25 @@
-import { apiRoot } from '@/lib/apiRoot';
-import { getServerSession } from '@/lib/getSession';
-import { isUserArray } from '@/lib/typeGuard';
-import { User } from '@prisma/client';
+'use client';
+
 import Link from 'next/link';
+import useSWR from 'swr';
+import useSWRImmutable from 'swr/immutable';
+import { fetcher } from '@/lib/fetcher';
+import { User } from '@prisma/client';
+import useUserSWR from '@/hooks/useUserSWR';
 
-const getAllUsers = async () => {
-	try {
-		const res = await (await fetch(`${apiRoot}/api/user`)).json();
-		if (!res.ok) throw new Error();
-
-		const users: User[] = res.data;
-		// if (!isUserArray(users)) {
-		// 	console.log(users);
-		// 	throw new Error('userの型にエラーがあります。');
-		// }
-
-		return users;
-	} catch (e) {
-		console.error(e);
-	}
-};
-
-export default async function MemberList() {
-	const users = await getAllUsers();
+export default function MemberList() {
+	const { user: users, error, isLoading } = useUserSWR(undefined);
 	const MAX_LEN = 5;
 
 	return (
 		<>
 			<h2>メンバー</h2>
 			<ul>
-				{users && users.length ? (
+				{isLoading ? (
+					<div>loading...</div>
+				) : !users || error ? (
+					<div>メンバーの取得に失敗しました。</div>
+				) : users.length ? (
 					// 上限数のみ表示
 					(users.length > MAX_LEN ? users.slice(0, MAX_LEN) : users).map((user) => (
 						<li key={user.id}>
@@ -37,7 +27,7 @@ export default async function MemberList() {
 						</li>
 					))
 				) : (
-					<>メンバーいません</>
+					<>メンバーがいません。</>
 				)}
 			</ul>
 			<Link href="/members">メンバー一覧へ→</Link>

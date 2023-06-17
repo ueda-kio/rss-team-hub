@@ -1,28 +1,21 @@
-import { apiRoot } from '@/lib/apiRoot';
-import { Article } from '@prisma/client';
+'use client';
+
 import Link from 'next/link';
+import useArticleSWR from '@/hooks/useArticleSWR';
 
-const getAllArticles = async () => {
-	try {
-		const res = await (await fetch(`${apiRoot}/api/article`)).json();
-		if (!res.ok) throw new Error();
-
-		const articles: Article[] = res.data;
-		return articles;
-	} catch (e) {
-		console.error(e);
-	}
-};
-
-export default async function ArticleList() {
-	const articles = await getAllArticles();
+export default function ArticleList() {
+	const { articles, error, isLoading } = useArticleSWR();
 	const MAX_LEN = 5;
 
 	return (
 		<>
 			<h2>投稿記事</h2>
 			<ul>
-				{articles && articles.length ? (
+				{isLoading ? (
+					<div>loading...</div>
+				) : !articles || error ? (
+					<div>記事の取得に失敗しました</div>
+				) : articles.length ? (
 					// 上限数のみ表示
 					(articles.length > MAX_LEN ? articles.slice(0, MAX_LEN) : articles).map((article) => (
 						<li key={article.id}>

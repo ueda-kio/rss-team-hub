@@ -2,6 +2,7 @@
 
 import { User } from '@prisma/client';
 import { signOut, useSession } from 'next-auth/react';
+import useSWRMutation from 'swr/mutation';
 import React, { useEffect, useState } from 'react';
 
 export default function Form() {
@@ -12,8 +13,6 @@ export default function Form() {
 	const sessionQiita = session?.user.qiita ?? '';
 	const sessionZenn = session?.user.zenn ?? '';
 	const sessionUsername = session?.user.name ?? '';
-
-	console.log(session?.user);
 
 	useEffect(() => {
 		setQiita(sessionQiita);
@@ -68,12 +67,36 @@ export default function Form() {
 			return;
 		}
 	};
+	const fetcher = async (url: string, { arg: site }: { arg: 'qiita' | 'zenn' }) => {
+		try {
+			const uid = session?.user.id;
+			if (typeof session === null || typeof uid === 'undefined') throw new Error();
+
+			await fetch(url, {
+				method: 'POST',
+				body: JSON.stringify({
+					uid,
+					username: site === 'qiita' ? qiita : zenn,
+					site,
+				}),
+			}).catch((e) => e);
+
+			await fetch(`/api/user/${uid}`, {
+				method: 'PATCH',
+				body: JSON.stringify(site === 'qiita' ? { qiita } : { zenn }),
+			}).then(() => {
+				if (session && session.user) {
+					site === 'qiita' ? (session.user.qiita = qiita) : (session.user.zenn = zenn);
+				}
+			});
+		} catch (e) {
+			console.error(e);
+			// return;
+		}
+	};
+	const { trigger } = useSWRMutation('/api/article/', fetcher);
 
 	const onClick = async () => {
-		// const item = await fetch(`/api/article/${session?.user.id}?test=hoge`);
-		// const item = await fetch(`/api/article/?creatorId=${session?.user.id}&site=qiita`);
-		// const j = await item.json();
-		// console.log(j);
 		const users: User[] = await (await fetch(`/api/postgl/`)).json();
 		console.log(users);
 	};
@@ -87,14 +110,26 @@ export default function Form() {
 					<button>登録</button>
 				</p>
 			</form>
-			<form onSubmit={(e) => handleChangeRssUserName(e, 'qiita')}>
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
+					trigger('qiita');
+					// handleChangeRssUserName(e, 'qiita');
+				}}
+			>
 				<p>
 					<span>qiita: </span>
 					<input type="text" value={qiita} onChange={(e) => setQiita(e.target.value)} />
 					<button>登録</button>
 				</p>
 			</form>
-			<form onSubmit={(e) => handleChangeRssUserName(e, 'zenn')}>
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
+					trigger('zenn');
+					// handleChangeRssUserName(e, 'zenn')
+				}}
+			>
 				<p>
 					<span>zenn: </span>
 					<input type="text" value={zenn} onChange={(e) => setZenn(e.target.value)} />

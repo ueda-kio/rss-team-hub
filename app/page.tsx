@@ -6,14 +6,8 @@ import SessionTest from './sessionTest';
 export default function Home() {
 	return (
 		<>
-			<Suspense fallback={<>loading...</>}>
-				{/* @ts-expect-error Server Component */}
-				<ArticleList />
-			</Suspense>
-			<Suspense fallback={<>loading...</>}>
-				{/* @ts-expect-error Server Component */}
-				<MemberList />
-			</Suspense>
+			<ArticleList />
+			<MemberList />
 			<SessionTest />
 		</>
 	);
