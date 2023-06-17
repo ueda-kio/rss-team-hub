@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@api/auth/[...nextauth]/route';
 import { isArticleArray, isUser } from '@/lib/typeGuard';
-import Form from '@/app/components/Form';
+import Form from '@/app/profile/[uid]/Form';
 import Image from 'next/image';
 import { apiRoot } from '@/lib/apiRoot';
 import { Suspense } from 'react';
