@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
 		await db.collection('items').deleteMany({ creatorId: uid, site });
 		await db.collection('items').insertMany(articles);
 
-		return NextResponse.json({ ok: true }, { status: 201 });
+		return NextResponse.json({ ok: true, data: articles }, { status: 201 });
 	} catch (e) {
 		console.error(e);
 		return NextResponse.json({ ok: false }, { status: 500 });

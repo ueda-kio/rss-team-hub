@@ -7,12 +7,15 @@ import useSWRImmutable from 'swr/immutable';
  * @param {string | undefined} creatorId 単体で取得したい場合は`creatorId`を渡す
  */
 export default function useArticleSWR(creatorId?: string) {
-	const { data, error, isLoading, mutate } = useSWRImmutable<Article[]>({ key: '/api/article/', creatorId }, ({ key, creatorId }) => {
+	const { data, error, isLoading, mutate } = useSWR<Article[]>({ key: '/api/article/', creatorId }, async ({ key, creatorId }) => {
 		const creatorIdQuery = creatorId ? `?creatorId=${creatorId}` : '';
 		const url = `${key}${creatorIdQuery}`;
-		return fetch(url)
-			.then((res) => res.json())
-			.then((json) => json.data);
+
+		console.log('url', url);
+
+		const res = await fetch(url);
+		const json = await res.json();
+		return json.data;
 	});
 
 	return {

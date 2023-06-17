@@ -3,7 +3,9 @@
 import { signOut, useSession } from 'next-auth/react';
 import useSWRMutation from 'swr/mutation';
 import React, { useEffect, useState } from 'react';
-import { User } from '@/@types';
+import { Article, User } from '@/@types';
+import { useSWRConfig } from 'swr';
+import useArticleSWR from '@/hooks/useArticleSWR';
 
 export default function Form() {
 	const { data: session } = useSession();
@@ -45,14 +47,23 @@ export default function Form() {
 			const uid = session?.user.id;
 			if (typeof session === null || typeof uid === 'undefined') throw new Error();
 
-			await fetch('/api/article', {
+			const res: {
+				ok: boolean;
+				data: Article[];
+			} = await fetch('/api/article/', {
 				method: 'POST',
 				body: JSON.stringify({
 					uid,
 					username: site === 'qiita' ? qiita : zenn,
 					site,
 				}),
-			}).catch((e) => e);
+			})
+				.then((res) => res.json())
+				.catch((e) => e);
+
+			console.log(res);
+
+			mutate({ ...res.data });
 
 			await fetch(`/api/user/${uid}`, {
 				method: 'PATCH',
@@ -96,9 +107,12 @@ export default function Form() {
 	};
 	const { trigger } = useSWRMutation('/api/article/', fetcher);
 
+	// const { mutate } = useSWRConfig();
+	const { mutate } = useArticleSWR();
 	const onClick = async () => {
-		const users: User[] = await (await fetch(`/api/postgl/`)).json();
-		console.log(users);
+		// const users: User[] = await (await fetch(`/api/postgl/`)).json();
+		// console.log(users);
+		// await mutate('/api/article/');
 	};
 
 	return (
@@ -111,10 +125,11 @@ export default function Form() {
 				</p>
 			</form>
 			<form
-				onSubmit={(e) => {
+				onSubmit={async (e) => {
 					e.preventDefault();
-					trigger('qiita');
-					// handleChangeRssUserName(e, 'qiita');
+					// trigger('qiita');
+					handleChangeRssUserName(e, 'qiita');
+					await mutate();
 				}}
 			>
 				<p>
@@ -124,10 +139,11 @@ export default function Form() {
 				</p>
 			</form>
 			<form
-				onSubmit={(e) => {
+				onSubmit={async (e) => {
 					e.preventDefault();
-					trigger('zenn');
-					// handleChangeRssUserName(e, 'zenn')
+					// trigger('zenn');
+					handleChangeRssUserName(e, 'zenn');
+					await mutate();
 				}}
 			>
 				<p>
