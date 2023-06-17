@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import useArticleSWR from '@/hooks/useArticleSWR';
 
-export default function ArticleList() {
-	const { articles, error, isLoading } = useArticleSWR();
+export default function ArticleList({ uid, site }: { uid: string; site: 'qiita' | 'zenn' }) {
+	const { articles, error, isLoading } = useArticleSWR(uid);
+	const filteredArticles = articles?.filter((item) => item.site === site);
 	const MAX_LEN = 5;
 
 	return (
@@ -13,11 +14,11 @@ export default function ArticleList() {
 			<ul>
 				{isLoading ? (
 					<div>loading...</div>
-				) : !articles || error ? (
-					<div>記事の取得に失敗しました</div>
-				) : articles.length ? (
+				) : !filteredArticles || error ? (
+					<div>記事の取得に失敗しました。</div>
+				) : filteredArticles.length ? (
 					// 上限数のみ表示
-					(articles.length > MAX_LEN ? articles.slice(0, MAX_LEN) : articles).map((article) => (
+					(filteredArticles.length > MAX_LEN ? filteredArticles.slice(0, MAX_LEN) : filteredArticles).map((article) => (
 						<li key={article._id}>
 							<a href={article.url} target="_blank" rel="noopener noreferrer">
 								{article.title}

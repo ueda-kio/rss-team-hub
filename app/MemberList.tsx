@@ -1,37 +1,29 @@
-import { apiRoot } from '@/lib/apiRoot';
-import { getServerSession } from '@/lib/getSession';
-import { isUserArray } from '@/lib/typeGuard';
+'use client';
+
 import Link from 'next/link';
+import useUserSWR from '@/hooks/useUserSWR';
 
-const getAllArticles = async () => {
-	try {
-		const res = await (await fetch(`${apiRoot}/api/user`)).json();
-		if (!res.ok) throw new Error();
-
-		const users = res.data;
-		if (isUserArray(users)) {
-			return users;
-		}
-	} catch (e) {
-		console.error(e);
-	}
-};
-
-export default async function MemberList() {
-	const users = await getAllArticles();
+export default function MemberList() {
+	const { user: users, error, isLoading } = useUserSWR(undefined);
 	const MAX_LEN = 5;
+
 	return (
 		<>
 			<h2>メンバー</h2>
 			<ul>
-				{users ? (
-					(users.length > MAX_LEN ? users.slice(MAX_LEN) : users).map((user) => (
+				{isLoading ? (
+					<div>loading...</div>
+				) : !users || error ? (
+					<div>メンバーの取得に失敗しました。</div>
+				) : users.length ? (
+					// 上限数のみ表示
+					(users.length > MAX_LEN ? users.slice(0, MAX_LEN) : users).map((user) => (
 						<li key={user._id}>
 							<Link href={`/profile/${user._id}`}>{user.username}</Link>
 						</li>
 					))
 				) : (
-					<>メンバーいません</>
+					<>メンバーがいません。</>
 				)}
 			</ul>
 			<Link href="/members">メンバー一覧へ→</Link>
