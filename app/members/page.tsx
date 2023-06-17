@@ -1,41 +1,30 @@
-import { apiRoot } from '@/lib/apiRoot';
-import { getServerSession } from '@/lib/getSession';
-import { isUserArray } from '@/lib/typeGuard';
+'use client';
+
 import Link from 'next/link';
-
-const getAllArticles = async () => {
-	try {
-		const res = await (await fetch(`${apiRoot}/api/user`)).json();
-		if (!res.ok) throw new Error();
-
-		const users = res.data;
-		if (isUserArray(users)) {
-			return users;
-		}
-	} catch (e) {
-		console.error(e);
-	}
-};
+import useSWR from 'swr';
+import { fetcher } from '@/lib/fetcher';
+import { User } from '@prisma/client';
 
 export default async function Members() {
-	const session = await getServerSession();
-	const users = await getAllArticles();
-	if (!users) {
-		return <>ユーザーの取得に失敗しました</>;
-	}
+	const { data: users, error, isLoading } = useSWR('/api/user', fetcher<User[]>);
 
 	return (
 		<>
 			<h1>メンバー一覧画面</h1>
 			<ul>
-				{users.length ? (
+				{isLoading ? (
+					<div>loading...</div>
+				) : !users || error ? (
+					<div>メンバーの取得に失敗しました。</div>
+				) : users.length ? (
+					// 上限数のみ表示
 					users.map((user) => (
-						<li key={user._id}>
-							<Link href={`profile/${user._id}`}>{user.username}</Link>
+						<li key={user.id}>
+							<Link href={`/profile/${user.id}`}>{user.name}</Link>
 						</li>
 					))
 				) : (
-					<>メンバーはいません</>
+					<>メンバーがいません。</>
 				)}
 			</ul>
 		</>

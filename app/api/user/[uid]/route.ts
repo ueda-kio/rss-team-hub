@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase } from '@/utils/mongodb';
-import { ObjectId } from 'mongodb';
 import { isIncludeUserType } from '@/lib/typeGuard';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(
 	req: NextRequest,
@@ -12,10 +11,18 @@ export async function GET(
 	}
 ) {
 	try {
-		const { db } = await connectToDatabase();
-		const user = await db.collection('users').findOne({ _id: new ObjectId(params.uid) });
+		const user = await prisma.user.findUnique({
+			where: {
+				id: params.uid,
+			},
+		});
+		if (user === null) throw new Error('ユーザーが見つかりませんでした。');
+
 		return NextResponse.json({ user }, { status: 200 });
-	} catch (e) {}
+	} catch (e) {
+		console.error(e);
+		return NextResponse.json({ ok: false }, { status: 404 });
+	}
 }
 
 export async function PATCH(
@@ -35,8 +42,16 @@ export async function PATCH(
 
 		console.log({ patchData });
 
-		const { db } = await connectToDatabase();
-		const re = await db.collection('users').updateMany({ _id: new ObjectId(params.uid) }, { $set: { ...patchData } });
+		const changedUser = await prisma.user.update({
+			where: {
+				id: params.uid,
+			},
+			data: {
+				...patchData,
+			},
+		});
+
+		console.log('変更後のuser', changedUser);
 
 		return NextResponse.json({ ok: 'ok' }, { status: 201 });
 	} catch (e) {
