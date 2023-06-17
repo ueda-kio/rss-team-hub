@@ -1,12 +1,11 @@
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@api/auth/[...nextauth]/route';
-import { isArticleArray, isUser } from '@/lib/typeGuard';
-import Form from '@/app/profile/[uid]/Form';
 import Image from 'next/image';
 import { apiRoot } from '@/lib/apiRoot';
 import { Suspense } from 'react';
 import ArticleList from './ArticleList';
 import { User } from '@/@types';
+import Link from 'next/link';
 
 const getSession = async () => {
 	const session = await getServerSession(authOptions);
@@ -49,7 +48,7 @@ export default async function ProfilePage({ params }: { params: { uid: string } 
 				{isMyPage && (
 					<div>
 						<h2>設定変更</h2>
-						<Form />
+						<Link href={'/setting'}>設定画面へ</Link>
 					</div>
 				)}
 			</div>
