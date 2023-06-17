@@ -47,6 +47,7 @@ export const authOptions: NextAuthOptions = {
 			}
 		},
 		async jwt({ token, user, account, profile }) {
+			console.log('jwt', token);
 			const { db } = await connectToDatabase();
 			const sessionUser = await db.collection('users').findOne({ email: token.email });
 			if (!sessionUser) return token;
