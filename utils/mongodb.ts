@@ -12,6 +12,7 @@ export async function connectToDatabase() {
 
 	if (cachedClient && cachedDb) {
 		//キャッシュ変数が入力されているか確認
+		console.log('MongoDB is already connected');
 		return { client: cachedClient, db: cachedDb };
 	}
 
@@ -19,6 +20,7 @@ export async function connectToDatabase() {
 	const db = await client.db(MONGODB_DB);
 	cachedClient = client;
 	cachedDb = db;
+	console.log('MongoDB connected');
 
 	return { client, db };
 }
