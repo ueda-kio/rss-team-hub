@@ -32,17 +32,12 @@ export const isUser = (obj: any): obj is User => {
 };
 export const isUserArray = (arr: any[]): arr is User[] => arr.every((el) => isUser(el));
 export const isIncludeUserType = (obj: { [k: string]: string | number }): obj is Partial<User> => {
-	// return Object.entries(articleTypeObj).every(([key, value]) => typeof value === typeof obj[key]);
-	const bool = Object.keys(obj).every((key) => Object.keys(userTypeObj).some((userKey) => userKey === key));
-	if (!bool) return false;
-
-	const { _id, email, image, qiita, username, zenn } = obj;
-	return (
-		typeof _id === 'string' ||
-		typeof email === 'string' ||
-		typeof image === 'string' ||
-		typeof qiita === 'string' ||
-		typeof username === 'string' ||
-		typeof zenn === 'string'
+	// `User` に含まれないプロパティがある場合 `false`
+	const isObject = typeof obj === 'object';
+	const isAllPropertiesMatch = Object.keys(obj).every((key) => Object.keys(userTypeObj).includes(key));
+	const isAllPropertiesTypesMatch = Object.entries(obj).every(
+		([key, value]) => typeof value === 'undefined' || typeof value === typeof userTypeObj[key as keyof typeof userTypeObj]
 	);
+
+	return isObject && isAllPropertiesMatch && isAllPropertiesTypesMatch;
 };
