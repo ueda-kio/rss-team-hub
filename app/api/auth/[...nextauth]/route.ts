@@ -1,6 +1,6 @@
 import { connectToDatabase } from '@/utils/mongodb';
-import NextAuth, { Session } from 'next-auth';
 import type { NextAuthOptions } from 'next-auth';
+import NextAuth, { Session } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 
 export const authOptions: NextAuthOptions = {

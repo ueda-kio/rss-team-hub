@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { Session } from 'next-auth';
-import Provider from './components/Provider';
 import Link from 'next/link';
 import ProfileButton from './ProfileButton';
+import Provider from './components/Provider';
 
 export const metadata: Metadata = {
 	title: 'RSS TEAM HUB',

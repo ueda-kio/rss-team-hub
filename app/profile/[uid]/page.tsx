@@ -1,11 +1,11 @@
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@api/auth/[...nextauth]/route';
-import Image from 'next/image';
+import { User } from '@/@types';
 import { apiRoot } from '@/lib/apiRoot';
+import { authOptions } from '@api/auth/[...nextauth]/route';
+import { getServerSession } from 'next-auth';
+import Image from 'next/image';
+import Link from 'next/link';
 import { Suspense } from 'react';
 import ArticleList from './ArticleList';
-import { User } from '@/@types';
-import Link from 'next/link';
 
 const getSession = async () => {
 	const session = await getServerSession(authOptions);

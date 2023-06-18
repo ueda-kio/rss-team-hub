@@ -1,7 +1,7 @@
 'use client';
 
-import Link from 'next/link';
 import useArticleSWR from '@/hooks/useArticleSWR';
+import Link from 'next/link';
 
 export default function ArticleList() {
 	const { articles, error, isLoading } = useArticleSWR();

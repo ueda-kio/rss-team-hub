@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { isIncludeUserType } from '@/lib/typeGuard';
 import { connectToDatabase } from '@/utils/mongodb';
 import { ObjectId } from 'mongodb';
-import { isIncludeUserType } from '@/lib/typeGuard';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
 	req: NextRequest,

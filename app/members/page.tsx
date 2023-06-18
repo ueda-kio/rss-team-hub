@@ -1,7 +1,7 @@
 'use client';
 
-import Link from 'next/link';
 import useUserSWR from '@/hooks/useUserSWR';
+import Link from 'next/link';
 
 export default async function Members() {
 	const { user: users, error, isLoading } = useUserSWR(undefined);
