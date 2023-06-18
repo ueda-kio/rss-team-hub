@@ -63,7 +63,8 @@ export default function Form() {
 
 			console.log(res);
 
-			mutate({ ...res.data });
+			// mutate({ ...articles, ...res.data });
+			mutate('/api/article/');
 
 			await fetch(`/api/user/${uid}`, {
 				method: 'PATCH',
@@ -78,7 +79,8 @@ export default function Form() {
 			return;
 		}
 	};
-	const fetcher = async (url: string, { arg: site }: { arg: 'qiita' | 'zenn' }) => {
+
+	const { trigger, isMutating } = useSWRMutation('/api/article/', async (url: string, { arg: site }: { arg: 'qiita' | 'zenn' }) => {
 		try {
 			const uid = session?.user.id;
 			if (typeof session === null || typeof uid === 'undefined') throw new Error();
@@ -104,11 +106,10 @@ export default function Form() {
 			console.error(e);
 			// return;
 		}
-	};
-	const { trigger } = useSWRMutation('/api/article/', fetcher);
+	});
 
-	// const { mutate } = useSWRConfig();
-	const { mutate } = useArticleSWR();
+	const { mutate } = useSWRConfig();
+	// const { articles, mutate } = useArticleSWR(undefined);
 	const onClick = async () => {
 		// const users: User[] = await (await fetch(`/api/postgl/`)).json();
 		// console.log(users);
@@ -127,28 +128,28 @@ export default function Form() {
 			<form
 				onSubmit={async (e) => {
 					e.preventDefault();
-					// trigger('qiita');
-					handleChangeRssUserName(e, 'qiita');
-					await mutate();
+					trigger('qiita');
+					// handleChangeRssUserName(e, 'qiita');
+					// await mutate();
 				}}
 			>
 				<p>
 					<span>qiita: </span>
-					<input type="text" value={qiita} onChange={(e) => setQiita(e.target.value)} />
+					<input type="text" value={qiita} onChange={(e) => setQiita(e.target.value)} disabled={isMutating} />
 					<button>登録</button>
 				</p>
 			</form>
 			<form
 				onSubmit={async (e) => {
 					e.preventDefault();
-					// trigger('zenn');
-					handleChangeRssUserName(e, 'zenn');
-					await mutate();
+					trigger('zenn');
+					// handleChangeRssUserName(e, 'zenn');
+					// await mutate();
 				}}
 			>
 				<p>
 					<span>zenn: </span>
-					<input type="text" value={zenn} onChange={(e) => setZenn(e.target.value)} />
+					<input type="text" value={zenn} onChange={(e) => setZenn(e.target.value)} disabled={isMutating} />
 					<button>登録</button>
 				</p>
 			</form>

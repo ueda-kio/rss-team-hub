@@ -10,9 +10,6 @@ export default function useArticleSWR(creatorId?: string) {
 	const { data, error, isLoading, mutate } = useSWR<Article[]>({ key: '/api/article/', creatorId }, async ({ key, creatorId }) => {
 		const creatorIdQuery = creatorId ? `?creatorId=${creatorId}` : '';
 		const url = `${key}${creatorIdQuery}`;
-
-		console.log('url', url);
-
 		const res = await fetch(url);
 		const json = await res.json();
 		return json.data;

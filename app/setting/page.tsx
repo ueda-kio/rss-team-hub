@@ -1,9 +1,11 @@
-import { getServerSession } from '@/lib/getSession';
+'use client';
+
+import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import Form from './Form';
 
 export default async function Setting() {
-	const session = await getServerSession();
+	const { data: session } = useSession();
 
 	if (!session) {
 		redirect('/api/auth/signin');
