@@ -20,111 +20,161 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-	const { uid, username, site } = (await req.json()) as {
-		uid: string;
-		username: string;
-		site: 'qiita' | 'zenn';
-	};
+	const qiitaObj = {
+		username: '',
+		uid: '',
+		BASE_URL: 'https://qiita.com/api/v2/users' as const,
+		headers: {
+			Authorization: `Bearer ${process.env.QIITA_TOKEN ?? ''}`,
+			'Content-Type': 'application/json',
+		},
+		async isExistUser() {
+			const ENDPOINT = `${this.BASE_URL}/${this.username}` as const;
 
-	const fetchQiitaApi = async (username: string, uid: string) => {
-		const BASE_URL = `https://qiita.com/api/v2`;
-		const ENDPOINT = `${BASE_URL}/users/${username}/items?page=1&per_page=100`;
-
-		try {
-			const token = process.env.QIITA_TOKEN;
-			if (typeof token === 'undefined') throw Error('Access Token is undefined.');
-
-			const res = await fetch(ENDPOINT, {
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'Content-Type': 'application/json',
-				},
-			});
-
-			if (res.status === 404) {
-				return NextResponse.json({ ok: false }, { status: 404 });
+			try {
+				const res = await fetch(ENDPOINT, { headers: this.headers });
+				return res.status === 200;
+			} catch (e) {
+				console.error(e);
+				return false;
 			}
+		},
+		async fetchArticles() {
+			const ENDPOINT = `${this.BASE_URL}/${this.username}/items?page=1&per_page=100` as const;
 
-			const feed = (await res.json()) as {
-				title?: string;
-				url?: string;
-				likes_count?: number;
-			}[];
-			const articles: Omit<Article, '_id'>[] = feed
-				.map((post) => {
-					const { title, url, likes_count } = post;
-					if (typeof url !== 'string' || typeof title !== 'string' || typeof likes_count !== 'number') return false;
+			try {
+				const res = await fetch(ENDPOINT, { headers: this.headers });
+				if (!res.ok) throw Error(res.statusText);
 
-					return {
-						site: 'qiita',
-						title,
-						url,
-						likes_count,
-						publish: true,
-						creatorId: uid,
-					} as const;
-				})
-				.filter((item): item is Exclude<typeof item, false> => item !== false);
-			return articles;
-		} catch (e) {
-			return NextResponse.json({ ok: false }, { status: 500, statusText: `${e}` });
-		}
+				const feed = (await res.json()) as {
+					title?: string;
+					url?: string;
+					likes_count?: number;
+				}[];
+				const articles: Omit<Article, '_id'>[] = feed
+					.map((post) => {
+						const { title, url, likes_count } = post;
+						if (typeof url !== 'string' || typeof title !== 'string' || typeof likes_count !== 'number') return false;
+
+						return {
+							site: 'qiita',
+							title,
+							url,
+							likes_count,
+							publish: true,
+							creatorId: this.uid,
+						} as const;
+					})
+					.filter((item): item is Exclude<typeof item, false> => item !== false);
+				return articles;
+			} catch (e) {
+				console.error(e);
+				return false;
+			}
+		},
+		init(username: string, uid: string) {
+			this.username = username;
+			this.uid = uid;
+		},
 	};
 
-	const fetchZennApi = async (username: string, uid: string) => {
-		const BASE_URL = 'https://zenn.dev/';
-		const ENDPOINT = `https://zenn.dev/api/articles?username=${username}`;
+	const zennObj = {
+		username: '',
+		uid: '',
+		BASE_URL: 'https://zenn.dev/api' as const,
+		async isExistUser() {
+			const ENDPOINT = `${this.BASE_URL}/users/${this.username}` as const;
 
-		try {
-			const feed = (await (await fetch(ENDPOINT)).json()) as {
-				articles: {
-					path?: string;
-					title?: string;
-					liked_count?: number;
-				}[];
-			};
-			const articles: Omit<Article, '_id'>[] = feed.articles
-				.map((item) => {
-					const { path, title, liked_count } = item;
-					if (typeof path !== 'string' || typeof title !== 'string' || typeof liked_count !== 'number') return false;
+			try {
+				const res = await fetch(ENDPOINT);
+				return res.status === 200;
+			} catch (e) {
+				console.error(e);
+				return false;
+			}
+		},
+		async fetchArticles() {
+			const ENDPOINT = `${this.BASE_URL}/articles?username=${this.username}` as const;
 
-					return {
-						site: 'zenn',
-						title,
-						url: `${BASE_URL}${path}`,
-						likes_count: liked_count,
-						publish: true,
-						creatorId: uid,
-					} as const;
-				})
-				.filter((item): item is Exclude<typeof item, false> => item !== false);
+			try {
+				const res = await fetch(ENDPOINT);
+				if (!res.ok) throw Error(res.statusText);
 
-			return articles;
-		} catch (e) {
-			console.error(e);
-			return NextResponse.json({ ok: false }, { status: 404 });
-		}
+				const feed = (await res.json()) as {
+					articles: {
+						path?: string;
+						title?: string;
+						liked_count?: number;
+					}[];
+				};
+				const articles: Omit<Article, '_id'>[] = feed.articles
+					.map((item) => {
+						const { path, title, liked_count } = item;
+						if (typeof path !== 'string' || typeof title !== 'string' || typeof liked_count !== 'number') return false;
+
+						return {
+							site: 'zenn',
+							title,
+							url: `https://zenn.dev/${path}`,
+							likes_count: liked_count,
+							publish: true,
+							creatorId: this.uid,
+						} as const;
+					})
+					.filter((item): item is Exclude<typeof item, false> => item !== false);
+
+				return articles;
+			} catch (e) {
+				console.error(e);
+				return false;
+			}
+		},
+		init(username: string, uid: string) {
+			this.username = username;
+			this.uid = uid;
+		},
 	};
 
 	try {
+		const { uid, username, site } = (await req.json()) as {
+			uid: string;
+			username: string;
+			site: 'qiita' | 'zenn';
+		};
+
 		const { db } = await connectToDatabase();
-		const articles = await (async () => {
-			if (site === 'qiita') {
-				return await fetchQiitaApi(username, uid);
-			} else if (site === 'zenn') {
-				return await fetchZennApi(username, uid);
+
+		let articles: Omit<Article, '_id'>[];
+		if (site === 'qiita') {
+			qiitaObj.init(username, uid);
+			if (!(await qiitaObj.isExistUser())) {
+				return NextResponse.json({}, { status: 404 });
 			}
-			return false;
-		})();
-		if (articles === false) throw new Error('"site"は"qiita"|"zenn"のみ');
-		if (articles instanceof NextResponse) return articles;
+
+			const res = await qiitaObj.fetchArticles();
+			if (res === false) throw new Error();
+
+			articles = res;
+		} else if (site === 'zenn') {
+			zennObj.init(username, uid);
+			if (!(await zennObj.isExistUser())) {
+				return NextResponse.json({}, { status: 404 });
+			}
+
+			const res = await zennObj.fetchArticles();
+			if (res === false) throw new Error();
+
+			articles = res;
+		} else {
+			console.error('"site" は qiita | zenn のみ許容されています。');
+			throw new Error();
+		}
 
 		await db.collection('items').deleteMany({ creatorId: uid, site });
 		await db.collection('items').insertMany(articles);
 
-		return NextResponse.json({ ok: true, data: articles }, { status: 201 });
+		return NextResponse.json({ data: articles }, { status: 201 });
 	} catch (e) {
-		console.error(e);
-		return NextResponse.json({ ok: false }, { status: 500 });
+		return NextResponse.json({}, { status: 500 });
 	}
 }

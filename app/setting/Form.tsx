@@ -85,14 +85,23 @@ export default function Form() {
 			const uid = session?.user.id;
 			if (typeof session === null || typeof uid === 'undefined') throw new Error();
 
-			await fetch(url, {
+			const res = await fetch(url, {
 				method: 'POST',
 				body: JSON.stringify({
 					uid,
 					username: site === 'qiita' ? qiita : zenn,
 					site,
 				}),
-			}).catch((e) => e);
+			});
+
+			console.log(res);
+
+			if (res.status === 404) {
+				alert(res.statusText);
+				return false;
+			} else if (!res.ok) {
+				throw new Error(res.statusText);
+			}
 
 			await fetch(`/api/user/${uid}`, {
 				method: 'PATCH',
@@ -136,7 +145,7 @@ export default function Form() {
 				<p>
 					<span>qiita: </span>
 					<input type="text" value={qiita} onChange={(e) => setQiita(e.target.value)} disabled={isMutating} />
-					<button>登録</button>
+					<button disabled={isMutating}>登録</button>
 				</p>
 			</form>
 			<form
@@ -150,7 +159,7 @@ export default function Form() {
 				<p>
 					<span>zenn: </span>
 					<input type="text" value={zenn} onChange={(e) => setZenn(e.target.value)} disabled={isMutating} />
-					<button>登録</button>
+					<button disabled={isMutating}>登録</button>
 				</p>
 			</form>
 			<button onClick={() => signOut({ callbackUrl: '/' })}>Sign out</button>

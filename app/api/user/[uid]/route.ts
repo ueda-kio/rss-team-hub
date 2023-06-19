@@ -15,7 +15,10 @@ export async function GET(
 		const { db } = await connectToDatabase();
 		const user = await db.collection('users').findOne({ _id: new ObjectId(params.uid) });
 		return NextResponse.json({ user }, { status: 200 });
-	} catch (e) {}
+	} catch (e) {
+		console.error('ユーザーデータの取得に失敗しました。', e);
+		return NextResponse.json({}, { status: 500, statusText: `Internal Server Error: ${e}` });
+	}
 }
 
 export async function PATCH(
@@ -37,10 +40,13 @@ export async function PATCH(
 
 		const { db } = await connectToDatabase();
 		const re = await db.collection('users').updateMany({ _id: new ObjectId(params.uid) }, { $set: { ...patchData } });
+		if (re.modifiedCount === 0) {
+			throw new Error('ユーザーが見つかりませんでした。');
+		}
 
-		return NextResponse.json({ ok: 'ok' }, { status: 201 });
+		return NextResponse.json({}, { status: 201 });
 	} catch (e) {
 		console.error(e);
-		return NextResponse.json({ error: `Internal Server Error: ${e}` }, { status: 500 });
+		return NextResponse.json({}, { status: 500, statusText: `Internal Server Error: ${e}` });
 	}
 }
