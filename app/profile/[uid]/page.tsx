@@ -1,16 +1,10 @@
 import { User } from '@/@types';
 import { apiRoot } from '@/lib/apiRoot';
-import { authOptions } from '@api/auth/[...nextauth]/route';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from '@/lib/getSession';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import ArticleList from './ArticleList';
-
-const getSession = async () => {
-	const session = await getServerSession(authOptions);
-	return session;
-};
 
 const getUserData = async (uid: string) => {
 	try {
@@ -34,7 +28,7 @@ async function ProfileImage({ uid }: { uid: string }) {
 
 export default async function ProfilePage({ params }: { params: { uid: string } }) {
 	const uid = decodeURI(params.uid);
-	const session = await getSession();
+	const session = await getServerSession();
 	const isMyPage = uid === session?.user.id;
 
 	return (
