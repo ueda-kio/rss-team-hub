@@ -7,6 +7,7 @@ declare module 'next-auth' {
 			id: string;
 			qiita: string;
 			zenn: string;
+			times: string;
 		} & DefaultSession['user'];
 	}
 	interface Profile {
@@ -20,5 +21,6 @@ declare module 'next-auth/jwt' {
 		username: string;
 		qiita: string;
 		zenn: string;
+		times: string;
 	}
 }

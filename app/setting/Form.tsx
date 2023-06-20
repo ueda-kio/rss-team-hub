@@ -9,18 +9,21 @@ import useSWRMutation from 'swr/mutation';
 
 export default function Form() {
 	const { data: session } = useSession();
+	const [username, setUsername] = useState('');
 	const [qiita, setQiita] = useState('');
 	const [zenn, setZenn] = useState('');
-	const [username, setUsername] = useState('');
+	const [times, setTimes] = useState('');
+	const sessionUsername = session?.user.name ?? '';
 	const sessionQiita = session?.user.qiita ?? '';
 	const sessionZenn = session?.user.zenn ?? '';
-	const sessionUsername = session?.user.name ?? '';
+	const sessionUserTimes = session?.user.times ?? '';
 
 	useEffect(() => {
+		setUsername(sessionUsername);
 		setQiita(sessionQiita);
 		setZenn(sessionZenn);
-		setUsername(sessionUsername);
-	}, [sessionQiita, sessionZenn, sessionUsername]);
+		setTimes(sessionUserTimes);
+	}, [sessionUsername, sessionQiita, sessionZenn, sessionUserTimes]);
 
 	const handleChangeUserName: React.FormEventHandler<HTMLFormElement> = async (e) => {
 		e.preventDefault();
@@ -33,6 +36,25 @@ export default function Form() {
 				if (session && session.user) {
 					session.user.name = username;
 					console.log('username is changed.');
+				}
+			});
+		} catch (e) {
+			console.error(e);
+			return;
+		}
+	};
+
+	const handleChangeTimes: React.FormEventHandler<HTMLFormElement> = async (e) => {
+		e.preventDefault();
+		try {
+			const uid = session?.user.id;
+			await fetch(`/api/user/${uid}`, {
+				method: 'PATCH',
+				body: JSON.stringify({ times }),
+			}).then(() => {
+				if (session && session.user) {
+					session.user.times = times;
+					console.log('#times is changed.');
 				}
 			});
 		} catch (e) {
@@ -160,6 +182,13 @@ export default function Form() {
 					<span>zenn: </span>
 					<input type="text" value={zenn} onChange={(e) => setZenn(e.target.value)} disabled={isMutating} />
 					<button disabled={isMutating}>登録</button>
+				</p>
+			</form>
+			<form onSubmit={handleChangeTimes}>
+				<p>
+					<span>times_: </span>
+					<input type="text" value={times} onChange={(e) => setTimes(e.target.value)} />
+					<button>登録</button>
 				</p>
 			</form>
 			<button onClick={() => signOut({ callbackUrl: '/' })}>Sign out</button>

@@ -13,11 +13,12 @@ export const authOptions: NextAuthOptions = {
 	session: { strategy: 'jwt' },
 	callbacks: {
 		async session({ token, session }) {
-			const { id, name, qiita, zenn } = token;
+			const { id, name, qiita, zenn, times } = token;
 			session.user.id = id;
 			session.user.name = name;
 			session.user.qiita = qiita;
 			session.user.zenn = zenn;
+			session.user.times = times;
 
 			return session;
 		},
@@ -37,6 +38,7 @@ export const authOptions: NextAuthOptions = {
 						image: profile.picture ?? '',
 						qiita: '',
 						zenn: '',
+						times: '',
 					});
 				}
 
@@ -55,8 +57,9 @@ export const authOptions: NextAuthOptions = {
 				...token,
 				id: sessionUser._id.toString(),
 				name: sessionUser.username ?? '',
-				qiita: sessionUser.qiita,
-				zenn: sessionUser.zenn,
+				qiita: sessionUser.qiita ?? '',
+				zenn: sessionUser.zenn ?? '',
+				times: sessionUser.times ?? '',
 			};
 		},
 	},

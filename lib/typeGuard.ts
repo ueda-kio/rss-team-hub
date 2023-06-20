@@ -34,6 +34,7 @@ export const userTypeObj = {
 	qiita: '',
 	username: '',
 	zenn: '',
+	times: '',
 	__v: 0,
 };
 export const isUser = (obj: any): obj is User => {
