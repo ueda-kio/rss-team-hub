@@ -4,6 +4,7 @@ import useArticleSWR from '@/hooks/useArticleSWR';
 
 export default async function Articles() {
 	const { articles, error, isLoading } = useArticleSWR();
+	const filteredArticles = articles?.filter((item) => item.publish) ?? [];
 
 	return (
 		<>
@@ -11,11 +12,11 @@ export default async function Articles() {
 			<ul>
 				{isLoading ? (
 					<div>loading...</div>
-				) : !articles || error ? (
+				) : !filteredArticles || error ? (
 					<div>記事の取得に失敗しました。</div>
-				) : articles.length ? (
+				) : filteredArticles.length ? (
 					// 上限数のみ表示
-					articles.map((article) => (
+					filteredArticles.map((article) => (
 						<li key={article._id}>
 							<a href={article.url} target="_blank" rel="noopener noreferrer">
 								{article.title}

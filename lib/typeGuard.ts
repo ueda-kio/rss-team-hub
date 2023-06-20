@@ -16,6 +16,15 @@ export const isArticle = (obj: any): obj is Article => {
 	return Object.entries(articleTypeObj).every(([key, value]) => typeof value === typeof obj[key]) && isSiteType(obj.site);
 };
 export const isArticleArray = (arr: any[]): arr is Article[] => arr.every((el) => isArticle(el));
+export const isIncludeArticleType = (obj: any): obj is Partial<Article> => {
+	const isObject = typeof obj === 'object';
+	const isAllPropertiesMatch = Object.keys(obj).every((key) => Object.keys(articleTypeObj).includes(key));
+	const isAllPropertiesTypesMatch = Object.entries(obj).every(
+		([key, value]) => typeof value === 'undefined' || typeof value === typeof articleTypeObj[key as keyof typeof articleTypeObj]
+	);
+
+	return isObject && isAllPropertiesMatch && isAllPropertiesTypesMatch;
+};
 
 // ===================== User Type =====================
 export const userTypeObj = {
