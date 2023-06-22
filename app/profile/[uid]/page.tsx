@@ -26,6 +26,15 @@ async function ProfileImage({ uid }: { uid: string }) {
 	return <Image src={user.image ?? ''} alt={user.username ?? ''} width={200} height={200} />;
 }
 
+async function Title({ uid }: { uid: string }) {
+	const user = await getUserData(uid);
+	if (!user) {
+		return <>ユーザーの取得に失敗しました。</>;
+	}
+
+	return <>{user.username}</>;
+}
+
 export default async function ProfilePage({ params }: { params: { uid: string } }) {
 	const uid = decodeURI(params.uid);
 	const session = await getServerSession();
@@ -33,18 +42,25 @@ export default async function ProfilePage({ params }: { params: { uid: string } 
 
 	return (
 		<>
-			{/* <h1>{isMyPage ? <>マイページ</> : <>ここは {user.name} のページです。</>}</h1> */}
+			{/* @ts-expect-error Server Component */}
+			<h1>{isMyPage ? <>マイページ</> : <Title uid={uid} />}</h1>
 			<div style={{ display: 'flex', gap: '40px' }}>
 				<Suspense fallback={<>loading...</>}>
 					{/* @ts-expect-error Server Component */}
 					<ProfileImage uid={uid} />
 				</Suspense>
-				{isMyPage && (
-					<div>
-						<h2>設定変更</h2>
-						<Link href={'/setting'}>設定画面へ</Link>
-					</div>
-				)}
+				<div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+					<ul>
+						<li>qiita: </li>
+						<li>zenn: </li>
+					</ul>
+
+					{isMyPage && (
+						<div>
+							<Link href={'/setting'}>設定画面へ</Link>
+						</div>
+					)}
+				</div>
 			</div>
 			<h2>記事一覧</h2>
 			<h3>qiita</h3>
