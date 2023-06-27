@@ -13,8 +13,8 @@ export async function GET(
 ) {
 	try {
 		const { db } = await connectToDatabase();
-		const user = await db.collection('users').findOne({ _id: new ObjectId(params.uid) });
-		return NextResponse.json({ user }, { status: 200 });
+		const data = await db.collection('users').findOne({ _id: new ObjectId(params.uid) });
+		return NextResponse.json({ data }, { status: 200 });
 	} catch (e) {
 		console.error('ユーザーデータの取得に失敗しました。', e);
 		return NextResponse.json({}, { status: 500, statusText: `Internal Server Error: ${e}` });

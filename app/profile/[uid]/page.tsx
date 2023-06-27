@@ -9,7 +9,7 @@ import ArticleList from './ArticleList';
 const getUserData = async (uid: string) => {
 	try {
 		const res = await (await fetch(`${apiRoot}/api/user/${uid}`)).json();
-		const user: User = res.user;
+		const user: User = res.data;
 		return user;
 	} catch (e) {
 		console.error(e);
