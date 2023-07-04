@@ -63,44 +63,44 @@ export default function Form() {
 		}
 	};
 
-	const handleChangeRssUserName = async (e: React.FormEvent<HTMLFormElement>, site: 'qiita' | 'zenn') => {
-		e.preventDefault();
-		try {
-			const uid = session?.user.id;
-			if (typeof session === null || typeof uid === 'undefined') throw new Error();
+	// const handleChangeRssUserName = async (e: React.FormEvent<HTMLFormElement>, site: 'qiita' | 'zenn') => {
+	// 	e.preventDefault();
+	// 	try {
+	// 		const uid = session?.user.id;
+	// 		if (typeof session === null || typeof uid === 'undefined') throw new Error();
 
-			const res: {
-				ok: boolean;
-				data: Article[];
-			} = await fetch('/api/article/', {
-				method: 'POST',
-				body: JSON.stringify({
-					uid,
-					username: site === 'qiita' ? qiita : zenn,
-					site,
-				}),
-			})
-				.then((res) => res.json())
-				.catch((e) => e);
+	// 		const res: {
+	// 			ok: boolean;
+	// 			data: Article[];
+	// 		} = await fetch('/api/article/', {
+	// 			method: 'POST',
+	// 			body: JSON.stringify({
+	// 				uid,
+	// 				username: site === 'qiita' ? qiita : zenn,
+	// 				site,
+	// 			}),
+	// 		})
+	// 			.then((res) => res.json())
+	// 			.catch((e) => e);
 
-			console.log(res);
+	// 		// console.log(res);
 
-			// mutate({ ...articles, ...res.data });
-			mutate('/api/article/');
+	// 		// mutate({ ...articles, ...res.data });
+	// 		mutate('/api/article/');
 
-			await fetch(`/api/user/${uid}`, {
-				method: 'PATCH',
-				body: JSON.stringify(site === 'qiita' ? { qiita } : { zenn }),
-			}).then(() => {
-				if (session && session.user) {
-					site === 'qiita' ? (session.user.qiita = qiita) : (session.user.zenn = zenn);
-				}
-			});
-		} catch (e) {
-			console.error(e);
-			return;
-		}
-	};
+	// 		await fetch(`/api/user/${uid}`, {
+	// 			method: 'PATCH',
+	// 			body: JSON.stringify(site === 'qiita' ? { qiita } : { zenn }),
+	// 		}).then(() => {
+	// 			if (session && session.user) {
+	// 				site === 'qiita' ? (session.user.qiita = qiita) : (session.user.zenn = zenn);
+	// 			}
+	// 		});
+	// 	} catch (e) {
+	// 		console.error(e);
+	// 		return;
+	// 	}
+	// };
 
 	const { trigger, isMutating } = useSWRMutation('/api/article/', async (url: string, { arg: site }: { arg: 'qiita' | 'zenn' }) => {
 		try {
@@ -116,7 +116,7 @@ export default function Form() {
 				}),
 			});
 
-			console.log(res);
+			// console.log(res);
 
 			if (res.status === 404) {
 				alert(res.statusText);
