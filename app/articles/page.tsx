@@ -1,26 +1,37 @@
-'use client';
+import Card from '@/components/Card/Card';
+import { apiRoot } from '@/lib/apiRoot';
+import { isArticleArray } from '@/lib/typeGuard';
 
-import useArticleSWR from '@/hooks/useArticleSWR';
+const getArticles = async () => {
+	try {
+		const res = await fetch(`${apiRoot}/api/article`);
+		if (!res.ok) throw Error();
 
-export default async function Articles() {
-	const { articles, error, isLoading } = useArticleSWR();
-	const filteredArticles = articles?.filter((item) => item.publish) ?? [];
+		const json = await res.json();
+		const articles = json.data;
+		if (!isArticleArray(articles)) throw new Error('型がおかしいZOY');
+
+		return articles;
+	} catch (e) {
+		console.error(e);
+	}
+};
+
+export default async function ArticleListServer() {
+	const articles = await getArticles();
+	const filteredArticles = articles?.filter((item) => item.publish);
 
 	return (
 		<>
-			<h1>記事一覧画面</h1>
-			<ul>
-				{isLoading ? (
-					<div>loading...</div>
-				) : !filteredArticles || error ? (
-					<div>記事の取得に失敗しました。</div>
+			<h2>投稿記事ページ</h2>
+			<ul style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', padding: '0', listStyle: 'none' }}>
+				{!filteredArticles ? (
+					<div>記事の取得に失敗しました</div>
 				) : filteredArticles.length ? (
 					// 上限数のみ表示
 					filteredArticles.map((article) => (
-						<li key={article._id}>
-							<a href={article.url} target="_blank" rel="noopener noreferrer">
-								{article.title}
-							</a>
+						<li key={article._id} style={{ display: 'flex', flex: 'auto', flexFlow: 'column' }}>
+							<Card props={article} />
 						</li>
 					))
 				) : (
