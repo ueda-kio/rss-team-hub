@@ -1,21 +1,33 @@
-'use client';
-
 import Card from '@/components/Card/Card';
-import useArticleSWR from '@/hooks/useArticleSWR';
+import { apiRoot } from '@/lib/apiRoot';
+import { isArticleArray } from '@/lib/typeGuard';
 import Link from 'next/link';
 
-export default function ArticleList() {
-	const { articles, error, isLoading } = useArticleSWR();
-	const filteredArticles = articles?.filter((item) => item.publish) ?? [];
+const getArticles = async () => {
+	try {
+		const res = await fetch(`${apiRoot}/api/article`);
+		if (!res.ok) throw Error();
+
+		const json = await res.json();
+		const articles = json.data;
+		if (!isArticleArray(articles)) throw new Error('型がおかしいZOY');
+
+		return articles;
+	} catch (e) {
+		console.error(e);
+	}
+};
+
+export default async function ArticleListServer() {
+	const articles = await getArticles();
+	const filteredArticles = articles?.filter((item) => item.publish);
 	const MAX_LEN = 6;
 
 	return (
 		<>
 			<h2>投稿記事</h2>
 			<ul style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', padding: '0', listStyle: 'none' }}>
-				{isLoading ? (
-					<div>loading...</div>
-				) : !filteredArticles || error ? (
+				{!filteredArticles ? (
 					<div>記事の取得に失敗しました</div>
 				) : filteredArticles.length ? (
 					// 上限数のみ表示

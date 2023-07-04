@@ -8,6 +8,7 @@ export const articleTypeObj = {
 	title: '',
 	url: '',
 	likes_count: 0,
+	created_at: '',
 	publish: true,
 	creatorId: '',
 	site: '',

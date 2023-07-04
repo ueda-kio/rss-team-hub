@@ -1,0 +1,17 @@
+.wrapper {
+	display: block;
+	flex: auto;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px -2px #000a3c1a;
+	transition: box-shadow 0.3s;
+	text-decoration: none;
+	&:hover {
+		box-shadow: 0 6px 12px -4px #001b4433;
+	}
+}
+.header {
+	display: flex;
+	align-items: flex-start;
+	gap: 20px;
+}

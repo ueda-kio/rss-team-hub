@@ -3,20 +3,26 @@ import { connectToDatabase } from '@/utils/mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
-	const { db } = await connectToDatabase();
-	const itemsCollection = await db.collection('items');
+	try {
+		const { db } = await connectToDatabase();
+		const itemsCollection = await db.collection('items');
 
-	const data = await (async () => {
-		if (req.nextUrl.search === '') {
-			return await itemsCollection.find().toArray();
-		} else {
-			const query = req.nextUrl.searchParams;
-			const findOption = Object.fromEntries(query.entries());
-			return await itemsCollection.find(findOption).toArray();
-		}
-	})();
+		const data = await (async () => {
+			if (req.nextUrl.search === '') {
+				// queryがなければ全件検索
+				return await itemsCollection.find().toArray();
+			} else {
+				// queryがあれば条件検索
+				const query = req.nextUrl.searchParams;
+				const findOption = Object.fromEntries(query.entries());
+				return await itemsCollection.find(findOption).toArray();
+			}
+		})();
 
-	return NextResponse.json({ ok: true, data }, { status: 200 });
+		return NextResponse.json({ data }, { status: 200 });
+	} catch (e) {
+		return NextResponse.json({}, { status: 500 });
+	}
 }
 
 export async function POST(req: NextRequest) {
@@ -50,10 +56,11 @@ export async function POST(req: NextRequest) {
 					title?: string;
 					url?: string;
 					likes_count?: number;
+					created_at: string;
 				}[];
 				const articles: Omit<Article, '_id'>[] = feed
 					.map((post) => {
-						const { title, url, likes_count } = post;
+						const { title, url, likes_count, created_at } = post;
 						if (typeof url !== 'string' || typeof title !== 'string' || typeof likes_count !== 'number') return false;
 
 						return {
@@ -61,6 +68,7 @@ export async function POST(req: NextRequest) {
 							title,
 							url,
 							likes_count,
+							created_at,
 							publish: true,
 							creatorId: this.uid,
 						} as const;
@@ -105,11 +113,12 @@ export async function POST(req: NextRequest) {
 						path?: string;
 						title?: string;
 						liked_count?: number;
+						published_at: string;
 					}[];
 				};
 				const articles: Omit<Article, '_id'>[] = feed.articles
 					.map((item) => {
-						const { path, title, liked_count } = item;
+						const { path, title, liked_count, published_at: created_at } = item;
 						if (typeof path !== 'string' || typeof title !== 'string' || typeof liked_count !== 'number') return false;
 
 						return {
@@ -117,6 +126,7 @@ export async function POST(req: NextRequest) {
 							title,
 							url: `https://zenn.dev/${path}`,
 							likes_count: liked_count,
+							created_at,
 							publish: true,
 							creatorId: this.uid,
 						} as const;
