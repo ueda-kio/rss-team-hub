@@ -1,6 +1,6 @@
 import { connectToDatabase } from '@/utils/mongodb';
 import type { NextAuthOptions } from 'next-auth';
-import NextAuth, { Session } from 'next-auth';
+import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 
 export const authOptions: NextAuthOptions = {
@@ -22,7 +22,7 @@ export const authOptions: NextAuthOptions = {
 
 			return session;
 		},
-		async signIn({ account, profile, user, credentials }) {
+		async signIn({ profile }) {
 			try {
 				if (typeof profile === 'undefined') throw new Error('profile is undefined');
 
@@ -48,8 +48,7 @@ export const authOptions: NextAuthOptions = {
 				return false;
 			}
 		},
-		async jwt({ token, user, account, profile }) {
-			console.log('jwt', token);
+		async jwt({ token }) {
 			const { db } = await connectToDatabase();
 			const sessionUser = await db.collection('users').findOne({ email: token.email });
 			if (!sessionUser) return token;
@@ -67,4 +66,3 @@ export const authOptions: NextAuthOptions = {
 
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
-// export default NextAuth(authOptions);

@@ -32,11 +32,8 @@ export async function PATCH(
 	try {
 		const patchData = await req.json();
 		if (!isIncludeUserType(patchData)) {
-			console.log('patchData', patchData);
 			throw new Error('payload異常');
 		}
-
-		console.log({ patchData });
 
 		const { db } = await connectToDatabase();
 		const re = await db.collection('users').updateMany({ _id: new ObjectId(params.uid) }, { $set: { ...patchData } });

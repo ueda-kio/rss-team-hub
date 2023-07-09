@@ -6,8 +6,8 @@ import { useEffect, useState } from 'react';
 import useSWRMutation from 'swr/mutation';
 
 export default function ArticleList({ uid, site }: { uid: string; site: 'qiita' | 'zenn' }) {
-	const { articles: data, error, isLoading } = useArticleSWR(uid);
-	const filteredArticles = data?.filter((item) => item.site === site) ?? [];
+	const { articles, error, isLoading } = useArticleSWR(uid);
+	const filteredArticles = articles?.filter((item) => item.site === site) ?? [];
 
 	const [publishArticles, setPublishArticles] = useState<Article[]>([]);
 	const [unPublishArticles, setUnPublishArticles] = useState<Article[]>([]);
@@ -15,7 +15,7 @@ export default function ArticleList({ uid, site }: { uid: string; site: 'qiita' 
 	useEffect(() => {
 		setPublishArticles(filteredArticles.filter((item) => item.publish));
 		setUnPublishArticles(filteredArticles.filter((item) => !item.publish));
-	}, [data]);
+	}, [articles]);
 
 	const { trigger, isMutating } = useSWRMutation(
 		'/api/article/',
@@ -42,14 +42,14 @@ export default function ArticleList({ uid, site }: { uid: string; site: 'qiita' 
 				}
 			} catch (e) {
 				console.error(e);
-				// return;
+				return;
 			}
 		}
 	);
 
 	return (
 		<>
-			<h4>表示記事</h4>
+			<h4>表示中の記事</h4>
 			<ul>
 				{isLoading ? (
 					<div>loading...</div>
@@ -72,7 +72,7 @@ export default function ArticleList({ uid, site }: { uid: string; site: 'qiita' 
 					<>記事がありません。</>
 				)}
 			</ul>
-			<h4>表示記事</h4>
+			<h4>非表示中の記事</h4>
 			<ul>
 				{isLoading ? (
 					<div>loading...</div>

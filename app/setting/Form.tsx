@@ -35,7 +35,6 @@ export default function Form() {
 			}).then(() => {
 				if (session && session.user) {
 					session.user.name = username;
-					console.log('username is changed.');
 				}
 			});
 		} catch (e) {
@@ -54,7 +53,6 @@ export default function Form() {
 			}).then(() => {
 				if (session && session.user) {
 					session.user.times = times;
-					console.log('#times is changed.');
 				}
 			});
 		} catch (e) {

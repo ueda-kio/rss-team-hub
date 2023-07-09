@@ -12,10 +12,8 @@ export async function PATCH(
 	}
 ) {
 	try {
-		console.log(params.id);
 		const patchData = await req.json();
 		if (!isIncludeArticleType(patchData)) {
-			console.log('patchData', patchData);
 			throw new Error('payload異常');
 		}
 
