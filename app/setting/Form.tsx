@@ -1,7 +1,7 @@
 'use client';
 
 import { Article, User } from '@/@types';
-import useArticleSWR from '@/hooks/useArticleSWR';
+import getArticleData from '@/hooks/getArticleData';
 import { signOut, useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 import { useSWRConfig } from 'swr';

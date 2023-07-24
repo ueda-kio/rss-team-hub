@@ -36,7 +36,6 @@ export const userTypeObj = {
 	username: '',
 	zenn: '',
 	times: '',
-	__v: 0,
 };
 export const isUser = (obj: any): obj is User => {
 	return Object.entries(userTypeObj).every(([key, value]) => typeof value === typeof obj[key]);

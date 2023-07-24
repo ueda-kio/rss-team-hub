@@ -1,19 +1,17 @@
 'use client';
 
-import useUserSWR from '@/hooks/useUserSWR';
+import getUserData from '@/hooks/getUserData';
 import Link from 'next/link';
 
-export default function MemberList() {
-	const { user: users, error, isLoading } = useUserSWR(undefined);
+export default async function MemberList() {
+	const users = await getUserData(undefined);
 	const MAX_LEN = 5;
 
 	return (
 		<>
 			<h2>メンバー</h2>
 			<ul>
-				{isLoading ? (
-					<div>loading...</div>
-				) : !users || error ? (
+				{!users ? (
 					<div>メンバーの取得に失敗しました。</div>
 				) : users.length ? (
 					// 上限数のみ表示

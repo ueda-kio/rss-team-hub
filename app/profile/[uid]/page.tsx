@@ -64,8 +64,10 @@ export default async function ProfilePage({ params }: { params: { uid: string } 
 			</div>
 			<h2>記事一覧</h2>
 			<h3>qiita</h3>
+			{/* @ts-expect-error Server Component */}
 			<ArticleList uid={uid} site="qiita" />
 			<h3>zenn</h3>
+			{/* @ts-expect-error Server Component */}
 			<ArticleList uid={uid} site="zenn" />
 		</>
 	);

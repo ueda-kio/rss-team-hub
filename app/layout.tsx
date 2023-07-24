@@ -13,8 +13,8 @@ export default function RootLayout({ children, session }: { children: React.Reac
 	return (
 		<html lang="ja">
 			<head>
-				<link rel="preload" href="/api/article/" as="fetch" crossOrigin="anonymous" />
-				<link rel="preload" href="/api/user/" as="fetch" crossOrigin="anonymous" />
+				{/* <link rel="preload" href="/api/article/" as="fetch" crossOrigin="anonymous" />
+				<link rel="preload" href="/api/user/" as="fetch" crossOrigin="anonymous" /> */}
 			</head>
 			<body style={{ maxWidth: '1200px', minHeight: '100vh', margin: '0 auto', padding: '0 40px' }}>
 				<Provider session={session}>

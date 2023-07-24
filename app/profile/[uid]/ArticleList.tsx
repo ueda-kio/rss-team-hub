@@ -1,12 +1,12 @@
 'use client';
 
 import { Article } from '@/@types';
-import useArticleSWR from '@/hooks/useArticleSWR';
+import getArticleData from '@/hooks/getArticleData';
 import { useEffect, useState } from 'react';
 import useSWRMutation from 'swr/mutation';
 
-export default function ArticleList({ uid, site }: { uid: string; site: 'qiita' | 'zenn' }) {
-	const { articles, error, isLoading } = useArticleSWR(uid);
+export default async function ArticleList({ uid, site }: { uid: string; site: 'qiita' | 'zenn' }) {
+	const articles = await getArticleData(uid);
 	const filteredArticles = articles?.filter((item) => item.site === site) ?? [];
 
 	const [publishArticles, setPublishArticles] = useState<Article[]>([]);
@@ -51,9 +51,7 @@ export default function ArticleList({ uid, site }: { uid: string; site: 'qiita' 
 		<>
 			<h4>表示中の記事</h4>
 			<ul>
-				{isLoading ? (
-					<div>loading...</div>
-				) : !publishArticles || error ? (
+				{!publishArticles ? (
 					<div>記事の取得に失敗しました。</div>
 				) : publishArticles.length ? (
 					// 上限数のみ表示
@@ -74,9 +72,7 @@ export default function ArticleList({ uid, site }: { uid: string; site: 'qiita' 
 			</ul>
 			<h4>非表示中の記事</h4>
 			<ul>
-				{isLoading ? (
-					<div>loading...</div>
-				) : !unPublishArticles || error ? (
+				{!unPublishArticles ? (
 					<div>記事の取得に失敗しました。</div>
 				) : unPublishArticles.length ? (
 					// 上限数のみ表示

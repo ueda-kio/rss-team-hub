@@ -1,24 +1,24 @@
 'use client';
 
 import { Article } from '@/@types';
-import useUserSWR from '@/hooks/useUserSWR';
+import getUserData from '@/hooks/getUserData';
 import Image from 'next/image';
 import classes from './Card.module.scss';
 
-export default function Card({ props }: { props: Article }) {
+export default async function Card({ props }: { props: Article }) {
 	const { title, url, created_at, creatorId, site } = props;
-	const { user, isLoading } = useUserSWR(creatorId);
+	const users = await getUserData(creatorId);
 
 	return (
 		<>
-			{isLoading ? (
-				<></>
+			{!users ? (
+				<>user is undefined.</>
 			) : (
 				<a className={classes.wrapper} href={url} target="_blank" rel="noopener noreferrer">
 					<div className={classes.header}>
-						<Image src={user?.image ?? ''} width={60} height={60} alt="" />
+						<Image src={users[0].image ?? ''} width={60} height={60} alt="" />
 						<div>
-							<p>{user?.username ?? ''}</p>
+							<p>{users[0].username ?? ''}</p>
 							<p>{created_at}</p>
 						</div>
 					</div>

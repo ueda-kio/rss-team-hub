@@ -31,6 +31,7 @@ export default async function ArticleListServer() {
 					// 上限数のみ表示
 					filteredArticles.map((article) => (
 						<li key={article._id} style={{ display: 'flex', flex: 'auto', flexFlow: 'column' }}>
+							{/* @ts-expect-error Server Component */}
 							<Card props={article} />
 						</li>
 					))
