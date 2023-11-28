@@ -17,7 +17,7 @@ export async function PATCH(
 			throw new Error('payload異常');
 		}
 
-		const { db } = await connectToDatabase();
+		const { db } = await connectToDatabase('article patch api.');
 		const re = await db.collection('items').updateMany({ _id: new ObjectId(params.id) }, { $set: { ...patchData } });
 		if (re.modifiedCount === 0) {
 			throw new Error('記事が見つかりませんでした。');

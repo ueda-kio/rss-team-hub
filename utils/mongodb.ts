@@ -6,21 +6,22 @@ let cachedClient: MongoClient;
 let cachedDb: Db;
 let isConnected = false; // track the connection
 
-export async function connectToDatabase() {
+export async function connectToDatabase(st: string) {
 	if (!MONGODB_URI || !MONGODB_DB) {
 		throw new Error(`Please define the MONGODB_${!MONGODB_URI ? 'URI' : 'DB'} environment variable inside .env.local`);
 	}
 
 	console.log('isConnected', isConnected);
+	console.log(st);
 
 	if (isConnected) {
-		console.log('MongoDB is already connected');
+		// console.log('MongoDB is already connected');
 		return { client: cachedClient, db: cachedDb };
 	}
 
 	if (cachedClient && cachedDb) {
 		//キャッシュ変数が入力されているか確認
-		console.log('MongoDB cache');
+		// console.log('MongoDB cache');
 		return { client: cachedClient, db: cachedDb };
 	}
 

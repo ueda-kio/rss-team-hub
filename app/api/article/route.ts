@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
 	try {
-		const { db } = await connectToDatabase();
+		const { db } = await connectToDatabase('article get api.');
 		const itemsCollection = await db.collection('items');
 
 		const data = await (async () => {
@@ -152,7 +152,7 @@ export async function POST(req: NextRequest) {
 			site: 'qiita' | 'zenn';
 		};
 
-		const { db } = await connectToDatabase();
+		const { db } = await connectToDatabase('article post api.');
 
 		let articles: Omit<Article, '_id'>[];
 		if (site === 'qiita') {

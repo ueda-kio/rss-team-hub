@@ -32,7 +32,7 @@ export default async function ArticleListServer() {
 					filteredArticles.map((article) => (
 						<li key={article._id} style={{ display: 'flex', flex: 'auto', flexFlow: 'column' }}>
 							{/* @ts-expect-error Server Component */}
-							<Card props={article} />
+							<Card article={article} />
 						</li>
 					))
 				) : (

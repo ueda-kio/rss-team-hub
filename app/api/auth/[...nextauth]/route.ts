@@ -26,7 +26,7 @@ export const authOptions: NextAuthOptions = {
 			try {
 				if (typeof profile === 'undefined') throw new Error('profile is undefined');
 
-				const { db } = await connectToDatabase();
+				const { db } = await connectToDatabase('signIn');
 				const { email } = profile;
 				if (typeof email === 'undefined') throw new Error('email is undefined');
 
@@ -49,7 +49,7 @@ export const authOptions: NextAuthOptions = {
 			}
 		},
 		async jwt({ token }) {
-			const { db } = await connectToDatabase();
+			const { db } = await connectToDatabase('jwt');
 			const sessionUser = await db.collection('users').findOne({ email: token.email });
 			if (!sessionUser) return token;
 			return {

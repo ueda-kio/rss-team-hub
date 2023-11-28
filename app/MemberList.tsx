@@ -4,6 +4,7 @@ import getUserData from '@/hooks/getUserData';
 import Link from 'next/link';
 
 export default async function MemberList() {
+	console.log('/MemberList component');
 	const users = await getUserData(undefined);
 	const MAX_LEN = 5;
 

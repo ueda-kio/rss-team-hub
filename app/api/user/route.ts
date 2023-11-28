@@ -2,7 +2,7 @@ import { connectToDatabase } from '@/utils/mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
-	const { db } = await connectToDatabase();
+	const { db } = await connectToDatabase('users get api.');
 	const usersCollection = await db.collection('users');
 
 	const data = await (async () => {

@@ -4,6 +4,7 @@ import getUserData from '@/hooks/getUserData';
 import Link from 'next/link';
 
 export default async function Members() {
+	console.log('members/ Members Component');
 	const users = await getUserData(undefined);
 
 	return (

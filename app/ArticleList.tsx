@@ -9,6 +9,8 @@ export default async function ArticleList() {
 	const filteredArticles = articles?.filter((item) => item.publish) ?? [];
 	const MAX_LEN = 6;
 
+	console.log('filteredArticles', filteredArticles);
+
 	return (
 		<>
 			<h2>投稿記事</h2>
@@ -19,8 +21,7 @@ export default async function ArticleList() {
 					// 上限数のみ表示
 					(filteredArticles.length > MAX_LEN ? filteredArticles.slice(0, MAX_LEN) : filteredArticles).map((article) => (
 						<li key={article._id} style={{ display: 'flex', flex: 'auto', flexFlow: 'column' }}>
-							{/* @ts-expect-error Server Component */}
-							<Card props={article} />
+							<a href={article.url}>{article.title}</a>
 						</li>
 					))
 				) : (

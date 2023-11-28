@@ -12,7 +12,7 @@ export async function GET(
 	}
 ) {
 	try {
-		const { db } = await connectToDatabase();
+		const { db } = await connectToDatabase('uuser get api.');
 		const data = await db.collection('users').findOne({ _id: new ObjectId(params.uid) });
 		return NextResponse.json({ data: [data] }, { status: 200 });
 	} catch (e) {
@@ -35,7 +35,7 @@ export async function PATCH(
 			throw new Error('payload異常');
 		}
 
-		const { db } = await connectToDatabase();
+		const { db } = await connectToDatabase('uuser patch api.');
 		const re = await db.collection('users').updateMany({ _id: new ObjectId(params.uid) }, { $set: { ...patchData } });
 		if (re.modifiedCount === 0) {
 			throw new Error('ユーザーが見つかりませんでした。');
